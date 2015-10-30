@@ -49,7 +49,6 @@ public class ImageAdapter extends BaseAdapter {
                 .load(url)
                 // .placeholder(R.drawable.ic_nocover)
                 .into(view);
-        view.setScaleType(ImageView.ScaleType.CENTER_CROP);
         view.setAdjustViewBounds(true);
         return view;
     }

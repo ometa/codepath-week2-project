@@ -1,12 +1,15 @@
 package org.ometa.imagesearcher.activities;
 
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -30,6 +33,7 @@ public class ImagesActivity extends AppCompatActivity {
     private ImageAdapter adapter;
     private ImageSearchClient client;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,39 +41,28 @@ public class ImagesActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        /*
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-        */
-
         gvImages = (GridView) findViewById(R.id.gvImages);
         final ArrayList<Image> images = new ArrayList<Image>();
         adapter = new ImageAdapter(this, images);
         gvImages.setAdapter(adapter);
 
+        client = new ImageSearchClient();
         fetchAllImages("cats");
     }
 
     private int totalPages;
     private int currentPageIndex;
-    private int currentPage;
 
     private void fetchAllImages(String query) {
-        client = new ImageSearchClient();
-        HashMap<String, String> opts = new HashMap<>();
-
+//        showProgressBar();
+        HashMap<String, String> opts = new HashMap<>();  // todo: customize this with a dialogue
         totalPages = 0;
         currentPageIndex = -1;
         fetchImages(query, opts);
+//        hideProgressBar();
     }
-    private void fetchImages(final String query, final HashMap<String, String> opts) {
 
+    private void fetchImages(final String query, final HashMap<String, String> opts) {
         client.getImages(query, opts, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -94,6 +87,8 @@ public class ImagesActivity extends AppCompatActivity {
                             HashMap<String, String> newOpts = new HashMap<>(opts);
                             int start = (currentPageIndex * 8) + 8;
                             newOpts.put("start", String.valueOf(start));
+
+                            // todo: here is the recursion. try to polish this.
                             fetchImages(query, newOpts);
                         }
                     }
@@ -119,18 +114,6 @@ public class ImagesActivity extends AppCompatActivity {
         return false;
     }
 
-
-
-//        ArrayList<String> opts = new ArrayList<>();
-
-//        gridView.setAdapter(imageAdapter);
-
-
-//        ImageAdapter imageAdapter = new ImageAdapter(this, isc.getImages(opts, new JsonHttpResponseHandler()
-//
-//        }));
-
-
         // display search form in action bar
         // accept user input, display spinner, search google api
         // display returned api data
@@ -146,25 +129,59 @@ public class ImagesActivity extends AppCompatActivity {
         // User can tap on any image in results to see the image full-screen
         // User can scroll down “infinitely” to continue loading more image results (up to 8 pages)
 
+    MenuItem miSearchSpinner;
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        miSearchSpinner = menu.findItem(R.id.miSearchSpinner);
+        ProgressBar v = (ProgressBar) MenuItemCompat.getActionView(miSearchSpinner);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    public void showProgressBar() {
+        miSearchSpinner.setVisible(true);
+    }
+
+    public void hideProgressBar() {
+        miSearchSpinner.setVisible(false);
+    }
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_images, menu);
-        return true;
+
+        MenuItem searchItem = menu.findItem(R.id.actionSearch);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                adapter.clear();
+                fetchAllImages(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+                // todo: how to use this callback without having the api go nuts
+                // and reset after we click the back arrow?
+                // todo: how to not run this after every keystroke if the user is
+                // still typing?
+            }
+        });
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
+        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-
+        if (id == R.id.actionSettings) {
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 }

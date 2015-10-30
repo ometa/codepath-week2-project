@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
@@ -46,10 +45,12 @@ public class ImageAdapter extends BaseAdapter {
         }
 
         String url = getItem(position).getTbUrl();
-        Picasso.with(context).load(url).into(view);  // .placeholder(R.drawable.ic_nocover)
-        view.setLayoutParams(new GridView.LayoutParams(85, 85));
-        view.setPadding(8, 8, 8, 8);
+        Picasso.with(context)
+                .load(url)
+                // .placeholder(R.drawable.ic_nocover)
+                .into(view);
         view.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        view.setAdjustViewBounds(true);
         return view;
     }
 

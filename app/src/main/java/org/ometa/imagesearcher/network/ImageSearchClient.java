@@ -16,7 +16,7 @@ public class ImageSearchClient {
     private static final String TAG = ImageSearchClient.class.getSimpleName();
 
     private static final String API_BASE_URL = "https://ajax.googleapis.com/ajax/services/search/images";
-    private static final String BASE_QUERY = "?v=1.0";
+    private static final String BASE_QUERY = "?v=1.0&rsz=8";
     private AsyncHttpClient client;
 
     public ImageSearchClient() {
@@ -61,6 +61,7 @@ public class ImageSearchClient {
         client.get(getApiUrl() + fullQuery, handler);
     }
 
+//    public static Map<String, String> buildOpts
 
 //    ?v=1.0&q=fuzzy%20monkey
 

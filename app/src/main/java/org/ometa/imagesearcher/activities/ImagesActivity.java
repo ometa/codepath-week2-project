@@ -53,13 +53,23 @@ public class ImagesActivity extends AppCompatActivity {
         adapter = new ImageAdapter(this, images);
         gvImages.setAdapter(adapter);
 
-        fetchImages("cats");
+        fetchAllImages("cats");
     }
 
-    private void fetchImages(String query) {
+    private int totalPages;
+    private int currentPageIndex;
+    private int currentPage;
 
+    private void fetchAllImages(String query) {
         client = new ImageSearchClient();
         HashMap<String, String> opts = new HashMap<>();
+
+        totalPages = 0;
+        currentPageIndex = -1;
+        fetchImages(query, opts);
+    }
+    private void fetchImages(final String query, final HashMap<String, String> opts) {
+
         client.getImages(query, opts, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -69,14 +79,25 @@ public class ImagesActivity extends AppCompatActivity {
                     if (response != null) {
                         rd = response.getJSONObject("responseData");
                         JSONArray results = rd.getJSONArray("results");
+                        JSONObject cursor = rd.getJSONObject("cursor");
+
                         final ArrayList<Image> images = Image.fromJson(results);
-                        adapter.clear();
                         for (Image image : images) {
                             adapter.add(image);
                         }
                         adapter.notifyDataSetChanged();
+
+                        currentPageIndex = cursor.has("currentPageIndex") ? cursor.getInt("currentPageIndex") : 0;
+                        totalPages = cursor.has("pages") ? cursor.getJSONArray("pages").length() : 0;
+
+                        if (morePagesToGo()) {
+                            HashMap<String, String> newOpts = new HashMap<>(opts);
+                            int start = (currentPageIndex * 8) + 8;
+                            newOpts.put("start", String.valueOf(start));
+                            fetchImages(query, newOpts);
+                        }
                     }
-                } catch(JSONException e){
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
@@ -91,6 +112,12 @@ public class ImagesActivity extends AppCompatActivity {
         });
     }
 
+    private boolean morePagesToGo() {
+        if (currentPageIndex < totalPages - 1) {
+            return true;
+        }
+        return false;
+    }
 
 
 

@@ -30,19 +30,12 @@ public class ImageSearchClient {
         return API_BASE_URL + path;
     }
 
-
-    private String getQuery(String query) {
-        String str = "";
-        try {
-            str = URLEncoder.encode(query, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-        return str;
+    public void getImages(final String query, final Map<String, String> opts, JsonHttpResponseHandler handler) {
+        String fullQuery = getFullQuery(query, opts);
+        client.get(getApiUrl() + fullQuery, handler);
     }
 
-    public void getImages(final String query, final Map<String, String> opts, JsonHttpResponseHandler handler) {
-
+    public String getFullQuery(final String query, final Map<String, String> opts) {
         String fullQuery = "";
         StringBuffer b = new StringBuffer();
         try {
@@ -57,13 +50,8 @@ public class ImageSearchClient {
         }
 
         Log.d(TAG, "Query URL: " + fullQuery);
-
-        client.get(getApiUrl() + fullQuery, handler);
+        return fullQuery;
     }
-
-//    public static Map<String, String> buildOpts
-
-//    ?v=1.0&q=fuzzy%20monkey
 
 
 //    as_sitesearch=photobucket.com

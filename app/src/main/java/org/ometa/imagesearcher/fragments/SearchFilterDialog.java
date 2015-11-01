@@ -1,6 +1,8 @@
 package org.ometa.imagesearcher.fragments;
 
+import android.app.Dialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -32,6 +34,15 @@ public class SearchFilterDialog extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_search_filter, container);
+    }
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+
+
+
+//        return super.onCreateDialog(savedInstanceState);
     }
 
     @Override

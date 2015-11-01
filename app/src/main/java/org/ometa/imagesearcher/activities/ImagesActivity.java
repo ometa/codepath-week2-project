@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.GridView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -21,6 +22,7 @@ import org.ometa.imagesearcher.R;
 import org.ometa.imagesearcher.adapters.ImageAdapter;
 import org.ometa.imagesearcher.fragments.SearchFilterDialog;
 import org.ometa.imagesearcher.models.Image;
+import org.ometa.imagesearcher.models.SearchFilterOptions;
 import org.ometa.imagesearcher.network.ImageSearchClient;
 
 import java.util.ArrayList;
@@ -52,14 +54,27 @@ public class ImagesActivity extends AppCompatActivity {
 
         client = new ImageSearchClient();
         fetchAllImages("cats");
+
         showSearchFilterDialog();
     }
 
+    // ---------------------------------------------------
+    // dialog stuff
     private void showSearchFilterDialog() {
         FragmentManager fm = getSupportFragmentManager();
         SearchFilterDialog sfd = SearchFilterDialog.newInstance(getString(R.string.search_filter));
         sfd.show(fm, "fragment_search_filter");
     }
+
+
+    @Override
+    public void onFinishImageFilterDialog(SearchFilterOptions opts) {
+        Toast.makeText(this, "Hi, " + inputText, Toast.LENGTH_SHORT).show();
+    }
+
+
+
+
 
     private int totalPages;
     private int currentPageIndex;

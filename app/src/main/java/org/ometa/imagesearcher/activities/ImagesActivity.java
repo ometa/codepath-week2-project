@@ -1,6 +1,7 @@
 package org.ometa.imagesearcher.activities;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -18,6 +19,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.ometa.imagesearcher.R;
 import org.ometa.imagesearcher.adapters.ImageAdapter;
+import org.ometa.imagesearcher.fragments.SearchFilterDialog;
 import org.ometa.imagesearcher.models.Image;
 import org.ometa.imagesearcher.network.ImageSearchClient;
 
@@ -26,13 +28,15 @@ import java.util.HashMap;
 
 import cz.msebera.android.httpclient.Header;
 
+
+
 public class ImagesActivity extends AppCompatActivity {
     private static final String TAG = ImagesActivity.class.getSimpleName();
 
     private GridView gvImages;
     private ImageAdapter adapter;
     private ImageSearchClient client;
-
+    private MenuItem miSearchSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +52,13 @@ public class ImagesActivity extends AppCompatActivity {
 
         client = new ImageSearchClient();
         fetchAllImages("cats");
+        showSearchFilterDialog();
+    }
+
+    private void showSearchFilterDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        SearchFilterDialog sfd = SearchFilterDialog.newInstance(getString(R.string.search_filter));
+        sfd.show(fm, "fragment_search_filter");
     }
 
     private int totalPages;
@@ -129,7 +140,6 @@ public class ImagesActivity extends AppCompatActivity {
         // User can tap on any image in results to see the image full-screen
         // User can scroll down “infinitely” to continue loading more image results (up to 8 pages)
 
-    MenuItem miSearchSpinner;
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -151,6 +161,8 @@ public class ImagesActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_images, menu);
+
+//        miSearchSpinner = menu.findItem(R.id.miSearchSpinner);
 
         MenuItem searchItem = menu.findItem(R.id.actionSearch);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);

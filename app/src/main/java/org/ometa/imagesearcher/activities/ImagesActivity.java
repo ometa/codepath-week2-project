@@ -54,13 +54,13 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
         client = new ImageSearchClient();
         //fetchAllImages("cats");
 
+        // default options
         filterOptions = new SearchFilterOptions();
 //        filterOptions.setImageSize(SearchFilterOptions.SIZE_XLARGE);
         filterOptions.setImageType(SearchFilterOptions.TYPE_PHOTO);
 //        filterOptions.setAsSiteSearch("foo");
         filterOptions.setImageColorization(SearchFilterOptions.IMGC_GRAY);
         filterOptions.setColorFilter(filterOptions.IMGCOLOR_BLUE);
-        //showSearchFilterDialog();
     }
 
     // ---------------------------------------------------

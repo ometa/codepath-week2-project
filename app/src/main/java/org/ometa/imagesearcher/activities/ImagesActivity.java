@@ -104,7 +104,7 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
 //        hideProgressBar();
     }
 
-    private void fetchImages(final String query, final SearchFilterOptions opts) {
+    private void fetchImages(String query, SearchFilterOptions opts) {
         fetchImages(query, opts, 0);
     }
 
@@ -131,8 +131,7 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
 
                         if (morePagesToGo()) {
                             int start = (currentPageIndex * 8) + 8;
-                            // todo: here is the recursion. try to polish this.
-                            fetchImages(query, opts, start);
+                            fetchImages(query, opts, start);            // recursion!
                         }
                     }
                 } catch (JSONException e) {
@@ -219,7 +218,7 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
     @Override
     public void onFilterButtonPressed(SearchFilterOptions opts) {
 
-        Toast.makeText(this, opts.getImageType() + ";" + opts.getImageSize()
+        Toast.makeText(this, opts.getImageSize() + ";" + opts.getImageType()
                 + ";" + opts.getImageColorization() + ";" + opts.getColorFilter()
                 + ";" + opts.getAsSiteSearch()
                 , Toast.LENGTH_LONG).show();
@@ -230,7 +229,5 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
             adapter.clear();
             fetchImages(currentQuery, filterOptions);
         }
-
-
     }
 }

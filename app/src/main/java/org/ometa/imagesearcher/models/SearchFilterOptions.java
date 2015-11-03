@@ -2,7 +2,6 @@ package org.ometa.imagesearcher.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -10,16 +9,14 @@ import java.util.HashMap;
 
 /**
  * Created by devin on 11/1/15.
- * This feels so verbose. There must be an easier way.
- * See: public final LinkedHashMap<String, String>
- *      http://stackoverflow.com/questions/4936819/java-check-if-enum-contains-a-given-string
+ * todo: This feels so verbose. There must be a cleaner way to define options
  */
 public class SearchFilterOptions implements Parcelable {
     private static final String TAG = SearchFilterOptions.class.getSimpleName();
 
     public SearchFilterOptions() {}
 
-    // todo: I am sure there are more efficient ways of doing this.
+    // todo: Try to cleanup all the null checks
     public String toQuery() {
         StringBuilder sb = new StringBuilder();
         try {
@@ -72,16 +69,11 @@ public class SearchFilterOptions implements Parcelable {
         this.imageSize = imageSize;
     }
 
-    // todo: This is gross.
-
     public String getImageSizeKey() {
         if (imageSize == null) {
             return null;
         }
         if (IMAGE_SIZE_KEYS.containsKey(imageSize)) {
-            String val = IMAGE_SIZE_KEYS.get(imageSize);
-            Log.d(TAG, val);
-
             return IMAGE_SIZE_KEYS.get(imageSize);
         }
         return null;
@@ -175,7 +167,7 @@ public class SearchFilterOptions implements Parcelable {
     // ---------------------------------------------------------------
     // imgcolor
 
-    public static final String IMGCOLOR_BLACK = "Grayscale";
+    public static final String IMGCOLOR_BLACK = "Black";
     public static final String IMGCOLOR_BLUE = "Blue";
     public static final String IMGCOLOR_BROWN = "Brown";
     public static final String IMGCOLOR_GRAY = "Gray";

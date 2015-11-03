@@ -60,7 +60,6 @@ public class ImagesActivity extends AppCompatActivity implements FilterDialog.On
 
     // helper variables for the API calls
     private int totalPages;
-    private int currentPageIndex;
 
     // view holder
     private static class ViewHolder {
@@ -126,7 +125,6 @@ public class ImagesActivity extends AppCompatActivity implements FilterDialog.On
                     }
                     adapter.notifyDataSetChanged();
 
-                    currentPageIndex = cursor.has("currentPageIndex") ? cursor.getInt("currentPageIndex") : 0;
                     totalPages = cursor.has("pages") ? cursor.getJSONArray("pages").length() : 0;
 
                 } catch (JSONException e) {

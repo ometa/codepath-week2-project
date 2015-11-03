@@ -51,9 +51,15 @@ public class ImagesActivity extends AppCompatActivity {
         gvImages.setAdapter(adapter);
 
         client = new ImageSearchClient();
-        fetchAllImages("cats");
+        //fetchAllImages("cats");
 
         filterOptions = new SearchFilterOptions();
+        filterOptions.setImageSize(filterOptions.SIZE_MEDIUM);
+        filterOptions.setImageType(filterOptions.TYPE_CLIPART);
+        filterOptions.setAsSiteSearch("foo");
+        filterOptions.setImgColoration(filterOptions.IMGC_COLOR);
+        filterOptions.setColorFilter(filterOptions.IMGCOLOR_BLUE);
+//        Toast.makeText(this, "size: " + filterOptions.getImageSize(), Toast.LENGTH_LONG).show();
         showSearchFilterDialog();
     }
 

@@ -1,12 +1,15 @@
 package org.ometa.imagesearcher.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by devin on 11/1/15.
  * This feels so verbose. There must be an easier way.
  * See: public final LinkedHashMap<String, String>
  *      http://stackoverflow.com/questions/4936819/java-check-if-enum-contains-a-given-string
  */
-public class SearchFilterOptions {
+public class SearchFilterOptions implements Parcelable {
 
     public SearchFilterOptions() {
         imageSize = null;
@@ -41,29 +44,20 @@ public class SearchFilterOptions {
     // size
 
     public enum Size {
-        SIZE_ICON, SIZE_MEDIUM, SIZE_LARGE, SIZE_XLARGE;
-
-        public static boolean contains(String str) {
-            try {
-                ImgType.valueOf(str);
-            } catch (Exception e) {
-                return false;
-            }
-            return true;
-        }
+        SIZE_ICON, SIZE_MEDIUM, SIZE_LARGE, SIZE_XLARGE
     }
 
     public final String SIZE_ICON = "Icon";
-    public final String SIZE_MEDIUM= "Medium";
+    public final String SIZE_MEDIUM = "Medium";
     public final String SIZE_LARGE = "Large";
-    public final String SIZE_XLARGE ="X-Large";
+    public final String SIZE_XLARGE = "X-Large";
 
     private String imageSize;
 
     public String getImageSize() {
 
         // todo: This is gross.
-        if(imageSize == null) {
+        if (imageSize == null) {
             return null;
         }
 
@@ -82,9 +76,7 @@ public class SearchFilterOptions {
     }
 
     public void setImageSize(String imageSize) {
-        if (Size.contains(imageSize)) {
-            this.imageSize = imageSize;
-        }
+        this.imageSize = imageSize;
     }
 
     // ---------------------------------------------------------------
@@ -104,21 +96,12 @@ public class SearchFilterOptions {
     // imgType
 
     public enum ImgType {
-        TYPE_FACE, TYPE_PHOTO, TYPE_CLIPART, TYPE_LINEART;
-
-        public static boolean contains(String str) {
-            try {
-                ImgType.valueOf(str);
-            } catch (Exception e) {
-                return false;
-            }
-            return true;
-        }
+        TYPE_FACE, TYPE_PHOTO, TYPE_CLIPART, TYPE_LINEART
     }
 
     public final String TYPE_FACE = "Faces";
-    public final String TYPE_PHOTO ="Photo";
-    public final String TYPE_CLIPART= "Clip Art";
+    public final String TYPE_PHOTO = "Photo";
+    public final String TYPE_CLIPART = "Clip Art";
     public final String TYPE_LINEART = "Line Drawings";
 
     private String imageType;
@@ -126,7 +109,7 @@ public class SearchFilterOptions {
     public String getImageType() {
 
         // todo: This is gross.
-        if(imageType == null) {
+        if (imageType == null) {
             return null;
         }
 
@@ -145,26 +128,16 @@ public class SearchFilterOptions {
     }
 
     public void setImageType(String imageType) {
-        if (ImgType.contains(imageType)) {
-            this.imageType = imageType;
-        }
+        this.imageType = imageType;
     }
 
     // ---------------------------------------------------------------
     // imgc (color or greyscale?
 
     public enum ImgColoration {
-        IMGC_GRAY, IMGC_COLOR;
-
-        public static boolean contains(String str) {
-            try {
-                ImgColoration.valueOf(str);
-            } catch (Exception e) {
-                return false;
-            }
-            return true;
-        }
+        IMGC_GRAY, IMGC_COLOR
     }
+
     public final String IMGC_GRAY = "Grayscale";
     public final String IMGC_COLOR = "Color";
 
@@ -173,7 +146,7 @@ public class SearchFilterOptions {
     public String getImgColoration() {
 
         // todo: This is gross.
-        if(imgColoration == null) {
+        if (imgColoration == null) {
             return null;
         }
 
@@ -188,9 +161,7 @@ public class SearchFilterOptions {
     }
 
     public void setImgColoration(String imgColoration) {
-        if (ImgColoration.contains(imgColoration)) {
-            this.imgColoration = imgColoration;
-        }
+        this.imgColoration = imgColoration;
     }
 
     // ---------------------------------------------------------------
@@ -199,16 +170,7 @@ public class SearchFilterOptions {
     public enum ColorFilter {
         IMGCOLOR_BLACK, IMGCOLOR_BLUE, IMGCOLOR_BROWN, IMGCOLOR_GRAY, IMGCOLOR_GREEN,
         IMGCOLOR_ORANGE, IMGCOLOR_PINK, IMGCOLOR_PURPLE, IMGCOLOR_RED, IMGCOLOR_TEAL,
-        IMGCOLOR_WHITE, IMGCOLOR_YELLOW;
-
-        public static boolean contains(String str) {
-            try {
-                ColorFilter.valueOf(str);
-            } catch (Exception e) {
-                return false;
-            }
-            return true;
-        }
+        IMGCOLOR_WHITE, IMGCOLOR_YELLOW
     }
 
     public final String IMGCOLOR_BLACK = "Grayscale";
@@ -229,7 +191,7 @@ public class SearchFilterOptions {
     public String getColorFilter() {
 
         // todo: This is gross.
-        if(colorFilter == null) {
+        if (colorFilter == null) {
             return null;
         }
 
@@ -264,8 +226,41 @@ public class SearchFilterOptions {
     }
 
     public void setColorFilter(String colorFilter) {
-        if (ColorFilter.contains(colorFilter)) {
-            this.colorFilter = colorFilter;
-        }
+        this.colorFilter = colorFilter;
     }
+
+    // ---------------------------------------------------------------
+    // parcelable
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.imageSize);
+        dest.writeString(this.asSiteSearch);
+        dest.writeString(this.imageType);
+        dest.writeString(this.imgColoration);
+        dest.writeString(this.colorFilter);
+    }
+
+    protected SearchFilterOptions(Parcel in) {
+        this.imageSize = in.readString();
+        this.asSiteSearch = in.readString();
+        this.imageType = in.readString();
+        this.imgColoration = in.readString();
+        this.colorFilter = in.readString();
+    }
+
+    public static final Parcelable.Creator<SearchFilterOptions> CREATOR = new Parcelable.Creator<SearchFilterOptions>() {
+        public SearchFilterOptions createFromParcel(Parcel source) {
+            return new SearchFilterOptions(source);
+        }
+
+        public SearchFilterOptions[] newArray(int size) {
+            return new SearchFilterOptions[size];
+        }
+    };
 }

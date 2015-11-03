@@ -3,6 +3,9 @@ package org.ometa.imagesearcher.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+
 /**
  * Created by devin on 11/1/15.
  * This feels so verbose. There must be an easier way.
@@ -15,7 +18,7 @@ public class SearchFilterOptions implements Parcelable {
         imageSize = null;
         asSiteSearch = null;
         imageType = null;
-        imgColoration = null;
+        imageColorization = null;
         colorFilter = null;
     }
 
@@ -26,13 +29,13 @@ public class SearchFilterOptions implements Parcelable {
             sb.append("&as_sitesearch=").append(asSiteSearch);
         }
         if (imageSize != null) {
-            sb.append("&imgsz=").append(getImageSize());
+            sb.append("&imgsz=").append(getImageSizeKey());
         }
         if (imageType != null) {
-            sb.append("&imgtype=").append(getImageType());
+            sb.append("&imgtype=").append(getImageTypeKey());
         }
-        if (imgColoration != null) {
-            sb.append("&imgc=").append(getImgColoration());
+        if (imageColorization != null) {
+            sb.append("&imgc=").append(getImageColorizationKey());
         }
         if (colorFilter != null) {
             sb.append("&imgcolor=").append(getColorFilter());
@@ -43,36 +46,38 @@ public class SearchFilterOptions implements Parcelable {
     // ---------------------------------------------------------------
     // size
 
-    public enum Size {
-        SIZE_ICON, SIZE_MEDIUM, SIZE_LARGE, SIZE_XLARGE
-    }
+    public final static String SIZE_ICON = "Icon";
+    public final static String SIZE_MEDIUM = "Medium";
+    public final static String SIZE_LARGE = "Large";
+    public final static String SIZE_XLARGE = "X-Large";
+    public final static String[] imageSizes = {SIZE_ICON, SIZE_MEDIUM, SIZE_LARGE, SIZE_XLARGE};
 
-    public final String SIZE_ICON = "Icon";
-    public final String SIZE_MEDIUM = "Medium";
-    public final String SIZE_LARGE = "Large";
-    public final String SIZE_XLARGE = "X-Large";
+    private final static LinkedHashMap<String, String> imageSizeKeys;
+    static {
+        imageSizeKeys = new LinkedHashMap<>();
+        imageSizeKeys.put(SIZE_ICON, "icon");
+        imageSizeKeys.put(SIZE_MEDIUM, "medium");
+        imageSizeKeys.put(SIZE_LARGE, "xxlarge");
+        imageSizeKeys.put(SIZE_XLARGE, "huge");
+    }
 
     private String imageSize;
 
     public String getImageSize() {
+        return imageSize;
+    }
+
+    public String getImageSizeKey() {
 
         // todo: This is gross.
         if (imageSize == null) {
             return null;
         }
-
-        switch (imageSize) {
-            case SIZE_ICON:
-                return "icon";
-            case SIZE_MEDIUM:
-                return "medium";    // small|medium|large|xlarge
-            case SIZE_LARGE:
-                return "xxlarge";
-            case SIZE_XLARGE:
-                return "huge";
-            default:
-                return "medium";
+        if (! imageSizeKeys.containsValue(imageSize)) {
+           return null;
         }
+
+        return imageSizeKeys.get(imageSize);
     }
 
     public void setImageSize(String imageSize) {
@@ -95,73 +100,79 @@ public class SearchFilterOptions implements Parcelable {
     // ---------------------------------------------------------------
     // imgType
 
-    public enum ImgType {
-        TYPE_FACE, TYPE_PHOTO, TYPE_CLIPART, TYPE_LINEART
+    public static final String TYPE_FACE = "Faces";
+    public static final String TYPE_PHOTO = "Photo";
+    public static final String TYPE_CLIPART = "Clip Art";
+    public static final String TYPE_LINEART = "Line Drawings";
+    public static final String[] imageTypes = {TYPE_FACE, TYPE_PHOTO, TYPE_CLIPART, TYPE_LINEART};
+    
+    private static final HashMap<String, String> imageTypeKeys;
+    static {
+        imageTypeKeys = new HashMap<>();
+        imageTypeKeys.put(TYPE_FACE, "face");
+        imageTypeKeys.put(TYPE_PHOTO, "photo");
+        imageTypeKeys.put(TYPE_CLIPART, "clipart");
+        imageTypeKeys.put(TYPE_LINEART, "lineart");
     }
-
-    public final String TYPE_FACE = "Faces";
-    public final String TYPE_PHOTO = "Photo";
-    public final String TYPE_CLIPART = "Clip Art";
-    public final String TYPE_LINEART = "Line Drawings";
 
     private String imageType;
 
     public String getImageType() {
-
-        // todo: This is gross.
-        if (imageType == null) {
-            return null;
-        }
-
-        switch (imageType) {
-            case TYPE_FACE:
-                return "face";
-            case TYPE_PHOTO:
-                return "photo";
-            case TYPE_CLIPART:
-                return "clipart";
-            case TYPE_LINEART:
-                return "lineart";
-            default:
-                return "photo";
-        }
+        return imageType;
     }
 
     public void setImageType(String imageType) {
         this.imageType = imageType;
     }
 
-    // ---------------------------------------------------------------
-    // imgc (color or greyscale?
-
-    public enum ImgColoration {
-        IMGC_GRAY, IMGC_COLOR
-    }
-
-    public final String IMGC_GRAY = "Grayscale";
-    public final String IMGC_COLOR = "Color";
-
-    private String imgColoration;
-
-    public String getImgColoration() {
+    public String getImageTypeKey() {
 
         // todo: This is gross.
-        if (imgColoration == null) {
+        if (imageType == null) {
+            return null;
+        }
+        if (! imageTypeKeys.containsValue(imageType)) {
             return null;
         }
 
-        switch (imgColoration) {
-            case IMGC_COLOR:
-                return "color";
-            case IMGC_GRAY:
-                return "gray";
-            default:
-                return "color";
-        }
+        return imageTypeKeys.get(imageType);
     }
 
-    public void setImgColoration(String imgColoration) {
-        this.imgColoration = imgColoration;
+    // ---------------------------------------------------------------
+    // imgc (color or greyscale?
+
+    public static final String IMGC_GRAY = "Grayscale";
+    public static final String IMGC_COLOR = "Color";
+    public static String[] imageColorizations = {IMGC_GRAY, IMGC_COLOR};
+            
+    private static final HashMap<String, String> imageColorizationKeys;
+    static {
+        imageColorizationKeys = new HashMap<>();
+        imageColorizationKeys.put(IMGC_GRAY, "gray");
+        imageColorizationKeys.put(IMGC_COLOR, "color");
+    }
+
+    private String imageColorization;
+
+    public String getImageColorization() {
+        return imageColorization;
+    }
+
+    public void setImageColorization(String imageColorization) {
+        this.imageColorization = imageColorization;
+    }
+
+    public String getImageColorizationKey() {
+
+        // todo: This is gross.
+        if (imageType == null) {
+            return null;
+        }
+        if (! imageColorizationKeys.containsValue(imageColorization)) {
+            return null;
+        }
+
+        return imageColorizationKeys.get(imageColorization);
     }
 
     // ---------------------------------------------------------------
@@ -242,7 +253,7 @@ public class SearchFilterOptions implements Parcelable {
         dest.writeString(this.imageSize);
         dest.writeString(this.asSiteSearch);
         dest.writeString(this.imageType);
-        dest.writeString(this.imgColoration);
+        dest.writeString(this.imageColorization);
         dest.writeString(this.colorFilter);
     }
 
@@ -250,7 +261,7 @@ public class SearchFilterOptions implements Parcelable {
         this.imageSize = in.readString();
         this.asSiteSearch = in.readString();
         this.imageType = in.readString();
-        this.imgColoration = in.readString();
+        this.imageColorization = in.readString();
         this.colorFilter = in.readString();
     }
 

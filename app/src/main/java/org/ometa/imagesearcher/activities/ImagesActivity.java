@@ -54,10 +54,10 @@ public class ImagesActivity extends AppCompatActivity {
         //fetchAllImages("cats");
 
         filterOptions = new SearchFilterOptions();
-        filterOptions.setImageSize(filterOptions.SIZE_MEDIUM);
-        filterOptions.setImageType(filterOptions.TYPE_CLIPART);
+        filterOptions.setImageSize(SearchFilterOptions.SIZE_XLARGE);
+        filterOptions.setImageType(SearchFilterOptions.TYPE_PHOTO);
         filterOptions.setAsSiteSearch("foo");
-        filterOptions.setImgColoration(filterOptions.IMGC_COLOR);
+        filterOptions.setImageColorization(SearchFilterOptions.IMGC_GRAY);
         filterOptions.setColorFilter(filterOptions.IMGCOLOR_BLUE);
 //        Toast.makeText(this, "size: " + filterOptions.getImageSize(), Toast.LENGTH_LONG).show();
         showSearchFilterDialog();

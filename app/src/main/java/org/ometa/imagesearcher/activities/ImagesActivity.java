@@ -9,7 +9,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.WindowManager;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -50,27 +49,42 @@ import cz.msebera.android.httpclient.Header;
 public class ImagesActivity extends AppCompatActivity implements SearchFilterDialog.OnFilterButtonPressedListener {
     private static final String TAG = ImagesActivity.class.getSimpleName();
 
-    private GridView gvImages;
+    private MenuItem miSearchSpinner;
     private ImageAdapter adapter;
     private ImageSearchClient client;
-    private MenuItem miSearchSpinner;
+
+    // hold state of our image query
     private SearchFilterOptions filterOptions;
     private String currentQuery;
+
+    // helper variables for the API calls
+    private int totalPages;
+    private int currentPageIndex;
+
+    // view holder
+    private static class ViewHolder {
+        GridView gvImages;
+    }
+    private ViewHolder viewHolder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_images);
+        // toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        gvImages = (GridView) findViewById(R.id.gvImages);
-        final ArrayList<Image> images = new ArrayList<Image>();
-        adapter = new ImageAdapter(this, images);
-        gvImages.setAdapter(adapter);
-
         client = new ImageSearchClient();
         filterOptions = new SearchFilterOptions();
+
+        viewHolder = new ViewHolder();
+        viewHolder.gvImages = (GridView) findViewById(R.id.gvImages);
+
+        // wire up the gridview
+        ArrayList<Image> images = new ArrayList<>();
+        adapter = new ImageAdapter(this, images);
+        viewHolder.gvImages.setAdapter(adapter);
 
         // default options
         /*
@@ -93,22 +107,13 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
 
     // ---------------------------------------------------
 
-    private int totalPages;
-    private int currentPageIndex;
-
-    private void fetchAllImages(String query) {
-//        showProgressBar();
-        totalPages = 0;
-        currentPageIndex = -1;
-        fetchImages(query, filterOptions);
-//        hideProgressBar();
-    }
 
     private void fetchImages(String query, SearchFilterOptions opts) {
         fetchImages(query, opts, 0);
     }
 
     private void fetchImages(final String query, final SearchFilterOptions opts, int start) {
+//        showProgressBar();
         client.getImages(query, opts, start, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
@@ -147,8 +152,10 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
                 super.onFailure(statusCode, headers, responseString, throwable);
             }
         });
+        //        hideProgressBar();
     }
 
+    // helper method to determine if the API has more results
     private boolean morePagesToGo() {
         if (currentPageIndex < totalPages - 1) {
             return true;
@@ -166,29 +173,28 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
     public void showProgressBar() {
         miSearchSpinner.setVisible(true);
     }
-
     public void hideProgressBar() {
         miSearchSpinner.setVisible(false);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_images, menu);
 
-        // search
-        MenuItem searchItem = menu.findItem(R.id.actionSearch);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        // init search bar
+        final MenuItem searchItem = menu.findItem(R.id.actionSearch);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-
             @Override
             public boolean onQueryTextSubmit(String query) {
-                getWindow().setSoftInputMode(
-                        WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-                adapter.clear();
-                currentQuery = query;
-                fetchAllImages(currentQuery);
+                // only update and query api if value changed
+                if (currentQuery == null || !currentQuery.equals(query)) {
+                    currentQuery = query;
+                    adapter.clear();
+                    fetchImages(currentQuery, filterOptions);
+                }
+                MenuItemCompat.collapseActionView(searchItem);
                 return true;
             }
 
@@ -225,6 +231,7 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
 
         filterOptions = opts;
 
+        // only update the results if we have a query string
         if (currentQuery != null) {
             adapter.clear();
             fetchImages(currentQuery, filterOptions);

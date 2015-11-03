@@ -3,41 +3,63 @@ package org.ometa.imagesearcher.models;
 /**
  * Created by devin on 11/1/15.
  * This feels so verbose. There must be an easier way.
+ * See public final LinkedHashMap<String, String>
  */
 public class SearchFilterOptions {
 
+    public SearchFilterOptions() {
+        imageSize = null;
+        asSiteSearch = null;
+        imageType = null;
+        imgColoration = null;
+        colorFilter = null;
+    }
+
+    // ---------------------------------------------------------------
     // size
 
     public enum Size {
-        ICON, MEDIUM, LARGE, XLARGE
+        SIZE_ICON, SIZE_MEDIUM, SIZE_LARGE, SIZE_XLARGE;
+
+        public static boolean contains(String str) {
+            try {
+                ImgType.valueOf(str);
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }
     }
 
-    public final String ICON = "Icon";
-    public final String MEDIUM= "Medium";
-    public final String LARGE = "Large";
-    public final String XLARGE ="X-Large";
+    public final String SIZE_ICON = "Icon";
+    public final String SIZE_MEDIUM= "Medium";
+    public final String SIZE_LARGE = "Large";
+    public final String SIZE_XLARGE ="X-Large";
 
-    private Size imageSize;
+    private String imageSize;
 
-    public String getImageSizeQuery() {
+    public String getImageSize() {
         switch (imageSize) {
-            case ICON:
+            case SIZE_ICON:
                 return "icon";
-            case MEDIUM:
+            case SIZE_MEDIUM:
                 return "medium";    // small|medium|large|xlarge
-            case LARGE:
+            case SIZE_LARGE:
                 return "xxlarge";
-            case XLARGE:
+            case SIZE_XLARGE:
                 return "huge";
             default:
                 return "medium";
         }
     }
 
-    public void setImageSize(Size imageSize) {
-        this.imageSize = imageSize;
+    public void setImageSize(String imageSize) {
+        if (Size.contains(imageSize)) {
+            this.imageSize = imageSize;
+        }
     }
 
+    // ---------------------------------------------------------------
     // as_sitesearch
 
     private String asSiteSearch; // "photobucket.com"
@@ -50,47 +72,71 @@ public class SearchFilterOptions {
         this.asSiteSearch = asSiteSearch;
     }
 
-
+    // ---------------------------------------------------------------
     // imgType
 
     public enum ImgType {
-        FACE, PHOTO, CLIPART, LINEART
+        TYPE_FACE, TYPE_PHOTO, TYPE_CLIPART, TYPE_LINEART;
+
+        public static boolean contains(String str) {
+            try {
+                ImgType.valueOf(str);
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }
     }
 
-    public final String FACE = "Faces";
-    public final String PHOTO ="Photo";
-    public final String CLIPART= "Clip Art";
-    public final String LINEART = "Line Drawings";
+    public final String TYPE_FACE = "Faces";
+    public final String TYPE_PHOTO ="Photo";
+    public final String TYPE_CLIPART= "Clip Art";
+    public final String TYPE_LINEART = "Line Drawings";
 
-    private ImgType imgType;
+    private String imageType;
 
-    public String getImageTypeQuery() {
-        switch (imgType) {
-            case FACE:
+    public String getImageType() {
+        switch (imageType) {
+            case TYPE_FACE:
                 return "face";
-            case PHOTO:
+            case TYPE_PHOTO:
                 return "photo";
-            case CLIPART:
+            case TYPE_CLIPART:
                 return "clipart";
-            case LINEART:
+            case TYPE_LINEART:
                 return "lineart";
             default:
                 return "photo";
         }
     }
 
+    public void setImageType(String imageType) {
+        if (ImgType.contains(imageType)) {
+            this.imageType = imageType;
+        }
+    }
 
-    // imgc
-
+    // ---------------------------------------------------------------
+    // imgc (color or greyscale?
 
     public enum ImgColoration {
-        IMGC_GRAY, IMGC_COLOR
+        IMGC_GRAY, IMGC_COLOR;
+
+        public static boolean contains(String str) {
+            try {
+                ImgColoration.valueOf(str);
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }
     }
     public final String IMGC_GRAY = "Grayscale";
     public final String IMGC_COLOR = "Color";
-    private ImgColoration imgColoration;
 
-    public String getImgColorationQuery() {
+    private String imgColoration;
+
+    public String getImgColoration() {
         switch (imgColoration) {
             case IMGC_COLOR:
                 return "color";
@@ -101,10 +147,30 @@ public class SearchFilterOptions {
         }
     }
 
-
-    public enum ImgColor {
-        IMGCOLOR_, IMGCOLOR_, IMGCOLOR_, IMGCOLOR_, IMGCOLOR_,
+    public void setImgColoration(String imgColoration) {
+        if (ImgColoration.contains(imgColoration)) {
+            this.imgColoration = imgColoration;
+        }
     }
+
+    // ---------------------------------------------------------------
+    // imgcolor
+
+    public enum ColorFilter {
+        IMGCOLOR_BLACK, IMGCOLOR_BLUE, IMGCOLOR_BROWN, IMGCOLOR_GRAY, IMGCOLOR_GREEN,
+        IMGCOLOR_ORANGE, IMGCOLOR_PINK, IMGCOLOR_PURPLE, IMGCOLOR_RED, IMGCOLOR_TEAL,
+        IMGCOLOR_WHITE, IMGCOLOR_YELLOW;
+
+        public static boolean contains(String str) {
+            try {
+                ColorFilter.valueOf(str);
+            } catch (Exception e) {
+                return false;
+            }
+            return true;
+        }
+    }
+
     public final String IMGCOLOR_BLACK = "Grayscale";
     public final String IMGCOLOR_BLUE = "Blue";
     public final String IMGCOLOR_BROWN = "Brown";
@@ -118,10 +184,10 @@ public class SearchFilterOptions {
     public final String IMGCOLOR_WHITE = "White";
     public final String IMGCOLOR_YELLOW = "Yellow";
 
-    private ImgColor imgColor;
+    private String colorFilter;
 
-    public String getImgColor() {
-        switch (imgColor) {
+    public String getColorFilter() {
+        switch (colorFilter) {
             case IMGCOLOR_BLACK:
                 return "black";
             case IMGCOLOR_BLUE:
@@ -133,7 +199,7 @@ public class SearchFilterOptions {
             case IMGCOLOR_GREEN:
                 return "green";
             case IMGCOLOR_ORANGE:
-                return "oeange";
+                return "orange";
             case IMGCOLOR_PINK:
                 return "pink";
             case IMGCOLOR_PURPLE:
@@ -151,47 +217,30 @@ public class SearchFilterOptions {
         }
     }
 
-
-
-// imgcolor (experimental)
-
-    imgcolor=black
-    Restricts results to images that contain a specified color predominantly:
-
-    imgcolor=black
-            imgcolor=blue
-    imgcolor=brown
-            imgcolor=gray
-    imgcolor=green
-            imgcolor=orange
-    imgcolor=pink
-            imgcolor=purple
-    imgcolor=red
-            imgcolor=teal
-    imgcolor=white
-            imgcolor=yellow
-
-
-    public String buildQuery() {
-//        return "as_sitesearch=" + asSiteSearch;
-//        return "imgsz=" + getImageSizeQuery();
-//        return "imgtype=" + getImageTypeQuery();
-        return "imgc=" + getImgColorationQuery();
+    public void setColorFilter(String colorFilter) {
+        if (ColorFilter.contains(colorFilter)) {
+            this.colorFilter = colorFilter;
+        }
     }
 
-
-
-
-
-
-}
-
-// Size (small, medium, large, extra-large)
-// Color filter (black, blue, brown, gray, green, etc...)
-// Type (faces, photo, clip art, line art)
-// Site (espn.com)
-/*
-
-
-
+    // todo: I am sure there are more efficient ways of doing this.
+    public String buildQuery() {
+        StringBuilder sb = new StringBuilder();
+        if (asSiteSearch != null) {
+            sb.append("&as_sitesearch=").append(asSiteSearch);
+        }
+        if (imageSize != null) {
+            sb.append("&imgsz=").append(getImageSize());
+        }
+        if (imageType != null) {
+            sb.append("&imgtype=").append(getImageType());
+        }
+        if (imgColoration != null) {
+            sb.append("&imgc=").append(getImgColoration());
+        }
+        if (colorFilter != null) {
+            sb.append("&imgcolor=").append(getColorFilter());
+        }
+        return sb.toString();
+    }
 }

@@ -14,7 +14,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import org.ometa.imagesearcher.R;
-import org.ometa.imagesearcher.models.SearchFilterOptions;
+import org.ometa.imagesearcher.models.SearchOptions;
 
 import java.util.Arrays;
 
@@ -29,7 +29,7 @@ public class SearchFilterDialog extends DialogFragment {
     private OnFilterButtonPressedListener listener;
 
     public interface OnFilterButtonPressedListener {
-        void onFilterButtonPressed(SearchFilterOptions opts);
+        void onFilterButtonPressed(SearchOptions opts);
     }
 
     @Override
@@ -54,7 +54,7 @@ public class SearchFilterDialog extends DialogFragment {
     }
     private ViewHolder viewHolder;
 
-    public static SearchFilterDialog newInstance(SearchFilterOptions opts) {
+    public static SearchFilterDialog newInstance(SearchOptions opts) {
         Bundle args = new Bundle();
         args.putParcelable("opts", opts);
         SearchFilterDialog frag = new SearchFilterDialog();
@@ -76,7 +76,7 @@ public class SearchFilterDialog extends DialogFragment {
         getDialog().setTitle(getString(R.string.search_filter));
 
         // get options from the activity
-        SearchFilterOptions opts = getArguments().getParcelable("opts");
+        SearchOptions opts = getArguments().getParcelable("opts");
 
         // setup view holder
         viewHolder.spinnerImageSize = (Spinner) view.findViewById(R.id.spinnerImageSize);
@@ -87,10 +87,10 @@ public class SearchFilterDialog extends DialogFragment {
         viewHolder.btnFilter = (Button) view.findViewById(R.id.btnFilter);
 
         // initialize our spinners
-        initSpinner(viewHolder.spinnerImageSize, SearchFilterOptions.imageSizes, opts.getImageSize());
-        initSpinner(viewHolder.spinnerImageType, SearchFilterOptions.imageTypes, opts.getImageType());
-        initSpinner(viewHolder.spinnerImageColorization, SearchFilterOptions.imageColorizations, opts.getImageColorization());
-        initSpinner(viewHolder.spinnerColorFilter, SearchFilterOptions.colorFilters, opts.getColorFilter());
+        initSpinner(viewHolder.spinnerImageSize, SearchOptions.imageSizes, opts.getImageSize());
+        initSpinner(viewHolder.spinnerImageType, SearchOptions.imageTypes, opts.getImageType());
+        initSpinner(viewHolder.spinnerImageColorization, SearchOptions.imageColorizations, opts.getImageColorization());
+        initSpinner(viewHolder.spinnerColorFilter, SearchOptions.colorFilters, opts.getColorFilter());
 
         // initialize as_sitesearch field
         if (opts.getAsSiteSearch() != null) {
@@ -102,7 +102,7 @@ public class SearchFilterDialog extends DialogFragment {
         viewHolder.btnFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SearchFilterOptions opts = getUpdatedOptions();
+                SearchOptions opts = getUpdatedOptions();
                 listener.onFilterButtonPressed(opts);
                 dismiss();
             }
@@ -111,8 +111,8 @@ public class SearchFilterDialog extends DialogFragment {
 
     // This checks for differences between the options object and the various views,
     // and updates and returns the options object with any new values.
-    private SearchFilterOptions getUpdatedOptions() {
-        SearchFilterOptions opts = getArguments().getParcelable("opts");
+    private SearchOptions getUpdatedOptions() {
+        SearchOptions opts = getArguments().getParcelable("opts");
 
         int iImageSize = viewHolder.spinnerImageSize.getSelectedItemPosition();
         int iImageType = viewHolder.spinnerImageType.getSelectedItemPosition();
@@ -121,28 +121,28 @@ public class SearchFilterDialog extends DialogFragment {
         String newAsSiteSearch = viewHolder.etAsSiteSearch.getText().toString();
 
         if (iImageSize != AdapterView.INVALID_POSITION) {
-            String newImageSize = SearchFilterOptions.imageSizes[iImageSize];
+            String newImageSize = SearchOptions.imageSizes[iImageSize];
             if (!newImageSize.equals(opts.getImageSize())) {
                 opts.setImageSize(newImageSize);
             }
         }
 
         if (iImageType != AdapterView.INVALID_POSITION) {
-            String newImageType = SearchFilterOptions.imageTypes[iImageType];
+            String newImageType = SearchOptions.imageTypes[iImageType];
             if (!newImageType.equals(opts.getImageType())) {
                 opts.setImageType(newImageType);
             }
         }
 
         if (iImageColorization != AdapterView.INVALID_POSITION) {
-            String newImageColorization = SearchFilterOptions.imageColorizations[iImageColorization];
+            String newImageColorization = SearchOptions.imageColorizations[iImageColorization];
             if (!newImageColorization.equals(opts.getImageColorization())) {
                 opts.setImageColorization(newImageColorization);
             }
         }
 
         if (iColorFilter != AdapterView.INVALID_POSITION) {
-            String newColorFilter = SearchFilterOptions.colorFilters[iColorFilter];
+            String newColorFilter = SearchOptions.colorFilters[iColorFilter];
             if (!newColorFilter.equals(opts.getColorFilter())) {
                 opts.setColorFilter(newColorFilter);
             }

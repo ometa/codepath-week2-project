@@ -17,11 +17,21 @@ import java.util.ArrayList;
  */
 public class ImageAdapter extends BaseAdapter {
     private Context context;
-    ArrayList<Image> images;
+    private ArrayList<Image> images;
 
-    public ImageAdapter(Context c, ArrayList<Image> i) {
-        context = c;
-        images = i;
+    public ImageAdapter(Context context, ArrayList<Image> images) {
+//        super(activity, images);
+        this.context = context;
+        this.images = images;
+    }
+
+    public void clear() {
+        images = new ArrayList<>();
+    }
+
+
+    public void add(Image image) {
+        images.add(image);
     }
 
     public int getCount() {
@@ -37,6 +47,7 @@ public class ImageAdapter extends BaseAdapter {
         return 0;
     }
 
+
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView view = (ImageView) convertView;
@@ -51,13 +62,5 @@ public class ImageAdapter extends BaseAdapter {
                 .into(view);
         view.setAdjustViewBounds(true);
         return view;
-    }
-
-    public void clear() {
-        images = new ArrayList<>();
-    }
-
-    public void add(Image image) {
-        images.add(image);
     }
 }

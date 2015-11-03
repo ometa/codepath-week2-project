@@ -5,7 +5,7 @@ import android.util.Log;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
-import org.ometa.imagesearcher.models.SearchFilterOptions;
+import org.ometa.imagesearcher.models.SearchOptions;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -32,7 +32,9 @@ public class ImageSearchClient {
         return API_BASE_URL + path;
     }
 
-    public void getImages(final String searchString, SearchFilterOptions opts, int start, JsonHttpResponseHandler handler) {
+    public void getImages(final String searchString, SearchOptions opts, int start, JsonHttpResponseHandler handler) {
+
+        // setup the query string
         String fullQuery = null;
         try {
             fullQuery = BASE_QUERY + "&q=" + URLEncoder.encode(searchString, "utf-8")
@@ -40,6 +42,8 @@ public class ImageSearchClient {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+
+        // call the api
         client.get(getApiUrl() + fullQuery, handler);
     }
 
@@ -62,58 +66,7 @@ public class ImageSearchClient {
     }
 
 
-//    as_sitesearch=photobucket.com
-//
-//
-//  imgc=gray / color
-
-// Size (small, medium, large, extra-large)
-// Color filter (black, blue, brown, gray, green, etc...)
-// Type (faces, photo, clip art, line art)
-// Site (espn.com)
 /*
-
-
-
-
-    imgsz
-            imgsz=icon
-    Restricts the search to images of the specified size, where size can be one of:
-
-    imgsz=icon restricts results to small images
-    imgsz=small|medium|large|xlarge restricts results to medium-sized images
-    imgsz=xxlarge restricts results to large images
-    imgsz=huge restricts resykts to extra-large images
-
-
-    imgtype (experimental)
-    imgtype=face
-    Restricts the search to one of the following image types:
-
-    imgtype=face restricts results to images of faces.
-            imgtype=photo restricts results to photographic images.
-    imgtype=clipart restricts results to clipart images.
-    imgtype=lineart restricts results to line drawing images.
-
-// imgcolor (experimental)
-
-    imgcolor=black
-    Restricts results to images that contain a specified color predominantly:
-
-    imgcolor=black
-            imgcolor=blue
-    imgcolor=brown
-            imgcolor=gray
-    imgcolor=green
-            imgcolor=orange
-    imgcolor=pink
-            imgcolor=purple
-    imgcolor=red
-            imgcolor=teal
-    imgcolor=white
-            imgcolor=yellow
-
-
 start
 start=4
 This argument supplies the start index of the first search result. Each successful response contains a cursor object (see below) which includes an array of pages. The start property for a page may be used as a valid value for this argument. For reference, a sample cursor object is shown below:
@@ -128,9 +81,6 @@ This argument supplies the start index of the first search result. Each successf
   "currentPageIndex": 0,
   "moreResultsUrl": "http://www.google.com/search..."
 }
-
-
-
 
 */
 }

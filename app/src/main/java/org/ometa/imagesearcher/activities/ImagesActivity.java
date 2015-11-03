@@ -21,8 +21,9 @@ import org.json.JSONObject;
 import org.ometa.imagesearcher.R;
 import org.ometa.imagesearcher.adapters.ImageAdapter;
 import org.ometa.imagesearcher.fragments.SearchFilterDialog;
+import org.ometa.imagesearcher.listeners.EndlessScrollListener;
 import org.ometa.imagesearcher.models.Image;
-import org.ometa.imagesearcher.models.SearchFilterOptions;
+import org.ometa.imagesearcher.models.SearchOptions;
 import org.ometa.imagesearcher.network.ImageSearchClient;
 
 import java.util.ArrayList;
@@ -54,7 +55,7 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
     private ImageSearchClient client;
 
     // hold state of our image query
-    private SearchFilterOptions filterOptions;
+    private SearchOptions filterOptions;
     private String currentQuery;
 
     // helper variables for the API calls
@@ -71,74 +72,63 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_images);
-        // toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        client = new ImageSearchClient();
-        filterOptions = new SearchFilterOptions();
 
         viewHolder = new ViewHolder();
         viewHolder.gvImages = (GridView) findViewById(R.id.gvImages);
 
-        // wire up the gridview
-        ArrayList<Image> images = new ArrayList<>();
-        adapter = new ImageAdapter(this, images);
+        client = new ImageSearchClient();
+        filterOptions = new SearchOptions();
+
+        // init the gridview w/ an empty array of images
+        adapter = new ImageAdapter(this, new ArrayList<Image>());
         viewHolder.gvImages.setAdapter(adapter);
 
-        // default options
-        /*
-        filterOptions.setImageSize(SearchFilterOptions.SIZE_XLARGE);
-        filterOptions.setImageType(SearchFilterOptions.TYPE_PHOTO);
-        filterOptions.setAsSiteSearch("foo");
-        filterOptions.setImageColorization(SearchFilterOptions.IMGC_GRAY);
-        filterOptions.setColorFilter(filterOptions.IMGCOLOR_BLUE);
-        */
+        // endless scrolling
+        viewHolder.gvImages.setOnScrollListener(new EndlessScrollListener() {
+            @Override
+            public boolean onLoadMore(int page, int totalItemsCount) {
+                if (pageExists(page)) {
+                    basicApiLoad(page);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
     }
 
-    // ---------------------------------------------------
-    // dialog
-
-    private void showSearchFilterDialog() {
-        FragmentManager fm = getSupportFragmentManager();
-        SearchFilterDialog sfd = SearchFilterDialog.newInstance(filterOptions);
-        sfd.show(fm, "fragment_search_filter");
+    private boolean pageExists(int page) {
+        if (page <= totalPages) return true;
+        return false;
     }
 
-    // ---------------------------------------------------
-
-
-    private void fetchImages(String query, SearchFilterOptions opts) {
-        fetchImages(query, opts, 0);
+    private void basicApiLoad() {
+        basicApiLoad(0);
     }
 
-    private void fetchImages(final String query, final SearchFilterOptions opts, int start) {
-//        showProgressBar();
-        client.getImages(query, opts, start, new JsonHttpResponseHandler() {
+    private void basicApiLoad(int starting_at_page) {
+        int start_at = Math.abs(starting_at_page - 1) * 8;
+        client.getImages(currentQuery, filterOptions, start_at, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.d(TAG, response.toString());
                 try {
-                    JSONObject rd = null;
-                    if (response != null) {
-                        rd = response.getJSONObject("responseData");
-                        JSONArray results = rd.getJSONArray("results");
-                        JSONObject cursor = rd.getJSONObject("cursor");
+                    JSONObject rd;
+                    rd = response.getJSONObject("responseData");
+                    JSONArray results = rd.getJSONArray("results");
+                    JSONObject cursor = rd.getJSONObject("cursor");
 
-                        final ArrayList<Image> images = Image.fromJson(results);
-                        for (Image image : images) {
-                            adapter.add(image);
-                        }
-                        adapter.notifyDataSetChanged();
-
-                        currentPageIndex = cursor.has("currentPageIndex") ? cursor.getInt("currentPageIndex") : 0;
-                        totalPages = cursor.has("pages") ? cursor.getJSONArray("pages").length() : 0;
-
-                        if (morePagesToGo()) {
-                            int start = (currentPageIndex * 8) + 8;
-                            fetchImages(query, opts, start);            // recursion!
-                        }
+                    final ArrayList<Image> images = Image.fromJson(results);
+                    for (Image image : images) {
+                        adapter.add(image);
                     }
+                    adapter.notifyDataSetChanged();
+
+                    currentPageIndex = cursor.has("currentPageIndex") ? cursor.getInt("currentPageIndex") : 0;
+                    totalPages = cursor.has("pages") ? cursor.getJSONArray("pages").length() : 0;
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -152,16 +142,18 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
                 super.onFailure(statusCode, headers, responseString, throwable);
             }
         });
-        //        hideProgressBar();
     }
 
-    // helper method to determine if the API has more results
-    private boolean morePagesToGo() {
-        if (currentPageIndex < totalPages - 1) {
-            return true;
-        }
-        return false;
+    // ---------------------------------------------------
+    // dialog
+
+    private void showSearchFilterDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        SearchFilterDialog sfd = SearchFilterDialog.newInstance(filterOptions);
+        sfd.show(fm, "fragment_search_filter");
     }
+
+    // ---------------------------------------------------
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -173,6 +165,7 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
     public void showProgressBar() {
         miSearchSpinner.setVisible(true);
     }
+
     public void hideProgressBar() {
         miSearchSpinner.setVisible(false);
     }
@@ -192,7 +185,7 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
                 if (currentQuery == null || !currentQuery.equals(query)) {
                     currentQuery = query;
                     adapter.clear();
-                    fetchImages(currentQuery, filterOptions);
+                    basicApiLoad();
                 }
                 MenuItemCompat.collapseActionView(searchItem);
                 return true;
@@ -222,7 +215,7 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
     }
 
     @Override
-    public void onFilterButtonPressed(SearchFilterOptions opts) {
+    public void onFilterButtonPressed(SearchOptions opts) {
 
         Toast.makeText(this, opts.getImageSize() + ";" + opts.getImageType()
                 + ";" + opts.getImageColorization() + ";" + opts.getColorFilter()
@@ -234,7 +227,20 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
         // only update the results if we have a query string
         if (currentQuery != null) {
             adapter.clear();
-            fetchImages(currentQuery, filterOptions);
+            basicApiLoad();
         }
     }
+
+    ///
+
+
+    public void setDefaultOptions() {
+        filterOptions.setImageSize(SearchOptions.SIZE_XLARGE);
+        filterOptions.setImageType(SearchOptions.TYPE_PHOTO);
+        filterOptions.setAsSiteSearch("foo");
+        filterOptions.setImageColorization(SearchOptions.IMGC_GRAY);
+        filterOptions.setColorFilter(SearchOptions.IMGCOLOR_BLUE);
+    }
+
+
 }

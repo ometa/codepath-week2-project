@@ -11,10 +11,10 @@ import java.util.HashMap;
  * Created by devin on 11/1/15.
  * todo: This feels so verbose. There must be a cleaner way to define options
  */
-public class SearchFilterOptions implements Parcelable {
-    private static final String TAG = SearchFilterOptions.class.getSimpleName();
+public class SearchOptions implements Parcelable {
+    private static final String TAG = SearchOptions.class.getSimpleName();
 
-    public SearchFilterOptions() {}
+    public SearchOptions() {}
 
     // todo: Try to cleanup all the null checks
     public String toQuery() {
@@ -239,7 +239,7 @@ public class SearchFilterOptions implements Parcelable {
         dest.writeString(this.colorFilter);
     }
 
-    protected SearchFilterOptions(Parcel in) {
+    protected SearchOptions(Parcel in) {
         this.imageSize = in.readString();
         this.asSiteSearch = in.readString();
         this.imageType = in.readString();
@@ -247,13 +247,13 @@ public class SearchFilterOptions implements Parcelable {
         this.colorFilter = in.readString();
     }
 
-    public static final Parcelable.Creator<SearchFilterOptions> CREATOR = new Parcelable.Creator<SearchFilterOptions>() {
-        public SearchFilterOptions createFromParcel(Parcel source) {
-            return new SearchFilterOptions(source);
+    public static final Parcelable.Creator<SearchOptions> CREATOR = new Parcelable.Creator<SearchOptions>() {
+        public SearchOptions createFromParcel(Parcel source) {
+            return new SearchOptions(source);
         }
 
-        public SearchFilterOptions[] newArray(int size) {
-            return new SearchFilterOptions[size];
+        public SearchOptions[] newArray(int size) {
+            return new SearchOptions[size];
         }
     };
 }

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ImageSearcher</string>
+    <string name="app_name">Find Images Fast!</string>
     <string name="search">Search</string>
     <string name="search_filter">Filter your search</string>
     <string name="loading">Loading...</string>

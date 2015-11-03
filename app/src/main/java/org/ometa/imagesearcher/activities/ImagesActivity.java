@@ -25,6 +25,7 @@ import org.ometa.imagesearcher.listeners.EndlessScrollListener;
 import org.ometa.imagesearcher.models.Image;
 import org.ometa.imagesearcher.models.SearchOptions;
 import org.ometa.imagesearcher.network.ImageSearchClient;
+import org.ometa.imagesearcher.network.Network;
 
 import java.util.ArrayList;
 
@@ -179,6 +180,10 @@ public class ImagesActivity extends AppCompatActivity implements FilterDialog.On
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                if (Network.isDown(getBaseContext())) {
+                    Toast.makeText(getBaseContext(), "No internet connection detected. Please check settings and try again.", Toast.LENGTH_LONG).show();
+                    return true;
+                }
                 // only update and query api if value changed
                 if (currentQuery == null || !currentQuery.equals(query)) {
                     currentQuery = query;
@@ -214,18 +219,16 @@ public class ImagesActivity extends AppCompatActivity implements FilterDialog.On
 
     @Override
     public void onFilterButtonPressed(SearchOptions opts) {
-
-        Toast.makeText(this, opts.getImageSize() + ";" + opts.getImageType()
-                + ";" + opts.getImageColorization() + ";" + opts.getColorFilter()
-                + ";" + opts.getAsSiteSearch()
-                , Toast.LENGTH_LONG).show();
-
         filterOptions = opts;
 
-        // only update the results if we have a query string
-        if (currentQuery != null) {
-            adapter.clear();
-            basicApiLoad();
+        if (Network.isDown(getBaseContext())) {
+            Toast.makeText(getParent(), "No internet connection detected. Please check settings and try again.", Toast.LENGTH_LONG).show();
+        } else {
+            // only update the results if we have a query string
+            if (currentQuery != null) {
+                adapter.clear();
+                basicApiLoad();
+            }
         }
     }
 }

@@ -13,5 +13,6 @@
     <string name="filter">Filter</string>
     <string name="reset">Reset</string>
     <string name="share">Share</string>
+    <string name="network_down">The network is down. Please check your internet.</string>
     <string name="title_activity_image_detail">ImageDetailActivity</string>
 </resources>

@@ -24,8 +24,8 @@ public class SearchFilterDialog extends DialogFragment {
         private Spinner spinnerImageSize;
         private Spinner spinnerImageType;
         private Spinner spinnerImageColorization;
+        private Spinner spinnerColorFilter;
         private EditText etAsSiteSearch;
-        private EditText etColorFilter;
     }
     private ViewHolder viewHolder;
 
@@ -49,12 +49,15 @@ public class SearchFilterDialog extends DialogFragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // setup the view holder
         viewHolder.spinnerImageSize = (Spinner) view.findViewById(R.id.spinnerImageSize);
         viewHolder.spinnerImageType = (Spinner) view.findViewById(R.id.spinnerImageType);
-        viewHolder.etAsSiteSearch = (EditText) view.findViewById(R.id.etAsSiteSearch);
         viewHolder.spinnerImageColorization = (Spinner) view.findViewById(R.id.spinnerImageColorization);
-        viewHolder.etColorFilter = (EditText) view.findViewById(R.id.etColorFilter);
+        viewHolder.spinnerColorFilter = (Spinner) view.findViewById(R.id.spinnerColorFilter);
+        viewHolder.etAsSiteSearch = (EditText) view.findViewById(R.id.etAsSiteSearch);
 
+        // get options from the activity
         SearchFilterOptions opts = getArguments().getParcelable("opts");
 
         // set dialog title
@@ -81,6 +84,13 @@ public class SearchFilterDialog extends DialogFragment {
         aaImageColorization.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         viewHolder.spinnerImageColorization.setAdapter(aaImageColorization);
 
+        // initialize color filter spinner
+        ArrayAdapter<String> aaColorFilter= new ArrayAdapter<>(getContext(),
+                android.R.layout.simple_spinner_item,
+                SearchFilterOptions.colorFilters);
+        aaImageColorization.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        viewHolder.spinnerColorFilter.setAdapter(aaColorFilter);
+
         if (opts.getImageSize() != null) {
             int pos = Arrays.asList(SearchFilterOptions.imageSizes).indexOf(opts.getImageSize());
             viewHolder.spinnerImageSize.setSelection(pos);
@@ -98,7 +108,8 @@ public class SearchFilterDialog extends DialogFragment {
         }
 
         if (opts.getColorFilter() != null) {
-            viewHolder.etColorFilter.setText(opts.getColorFilter());
+            int pos = Arrays.asList(SearchFilterOptions.colorFilters).indexOf(opts.getColorFilter());
+            viewHolder.spinnerColorFilter.setSelection(pos);
         }
 
         // Show soft keyboard automatically and request focus to field

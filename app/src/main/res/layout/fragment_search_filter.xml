@@ -48,10 +48,11 @@
     <TextView
         android:id="@+id/ColorFilter" android:text="@string/color_filter"
         android:layout_width="wrap_content" android:layout_height="wrap_content" />
+    <Spinner
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinnerColorFilter"
+        android:spinnerMode="dropdown"
+        />
 
-    <EditText
-        android:id="@+id/etColorFilter"
-        android:layout_width="match_parent"  android:layout_height="wrap_content"
-        android:inputType="text"
-        android:imeOptions="actionDone" />
 </LinearLayout>

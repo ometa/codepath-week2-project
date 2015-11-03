@@ -38,7 +38,7 @@ public class SearchFilterOptions implements Parcelable {
             sb.append("&imgc=").append(getImageColorizationKey());
         }
         if (colorFilter != null) {
-            sb.append("&imgcolor=").append(getColorFilter());
+            sb.append("&imgcolor=").append(getColorFilterKey());
         }
         return sb.toString();
     }
@@ -178,66 +178,61 @@ public class SearchFilterOptions implements Parcelable {
     // ---------------------------------------------------------------
     // imgcolor
 
-    public enum ColorFilter {
+    public static final String IMGCOLOR_BLACK = "Grayscale";
+    public static final String IMGCOLOR_BLUE = "Blue";
+    public static final String IMGCOLOR_BROWN = "Brown";
+    public static final String IMGCOLOR_GRAY = "Gray";
+    public static final String IMGCOLOR_GREEN = "Green";
+    public static final String IMGCOLOR_ORANGE = "Orange";
+    public static final String IMGCOLOR_PINK = "Pink";
+    public static final String IMGCOLOR_PURPLE = "Purple";
+    public static final String IMGCOLOR_RED = "Red";
+    public static final String IMGCOLOR_TEAL = "Teal";
+    public static final String IMGCOLOR_WHITE = "White";
+    public static final String IMGCOLOR_YELLOW = "Yellow";
+    public static final String[] colorFilters = {
         IMGCOLOR_BLACK, IMGCOLOR_BLUE, IMGCOLOR_BROWN, IMGCOLOR_GRAY, IMGCOLOR_GREEN,
         IMGCOLOR_ORANGE, IMGCOLOR_PINK, IMGCOLOR_PURPLE, IMGCOLOR_RED, IMGCOLOR_TEAL,
         IMGCOLOR_WHITE, IMGCOLOR_YELLOW
-    }
+    };
 
-    public final String IMGCOLOR_BLACK = "Grayscale";
-    public final String IMGCOLOR_BLUE = "Blue";
-    public final String IMGCOLOR_BROWN = "Brown";
-    public final String IMGCOLOR_GRAY = "Gray";
-    public final String IMGCOLOR_GREEN = "Green";
-    public final String IMGCOLOR_ORANGE = "Orange";
-    public final String IMGCOLOR_PINK = "Pink";
-    public final String IMGCOLOR_PURPLE = "Purple";
-    public final String IMGCOLOR_RED = "Red";
-    public final String IMGCOLOR_TEAL = "Teal";
-    public final String IMGCOLOR_WHITE = "White";
-    public final String IMGCOLOR_YELLOW = "Yellow";
+    private static final HashMap<String, String> colorFilterKeys;
+    static {
+        colorFilterKeys = new HashMap<>();
+        colorFilterKeys.put(IMGCOLOR_BLACK, "black");
+        colorFilterKeys.put(IMGCOLOR_BLUE, "blue");
+        colorFilterKeys.put(IMGCOLOR_BROWN, "brown");
+        colorFilterKeys.put(IMGCOLOR_GRAY, "gray");
+        colorFilterKeys.put(IMGCOLOR_GREEN, "green");
+        colorFilterKeys.put(IMGCOLOR_ORANGE, "orange");
+        colorFilterKeys.put(IMGCOLOR_PINK, "pink");
+        colorFilterKeys.put(IMGCOLOR_PURPLE, "purple");
+        colorFilterKeys.put(IMGCOLOR_RED, "red");
+        colorFilterKeys.put(IMGCOLOR_TEAL, "teal");
+        colorFilterKeys.put(IMGCOLOR_WHITE, "white");
+        colorFilterKeys.put(IMGCOLOR_YELLOW, "yellow");
+    }
 
     private String colorFilter;
 
     public String getColorFilter() {
-
-        // todo: This is gross.
-        if (colorFilter == null) {
-            return null;
-        }
-
-        switch (colorFilter) {
-            case IMGCOLOR_BLACK:
-                return "black";
-            case IMGCOLOR_BLUE:
-                return "blue";
-            case IMGCOLOR_BROWN:
-                return "brown";
-            case IMGCOLOR_GRAY:
-                return "gray";
-            case IMGCOLOR_GREEN:
-                return "green";
-            case IMGCOLOR_ORANGE:
-                return "orange";
-            case IMGCOLOR_PINK:
-                return "pink";
-            case IMGCOLOR_PURPLE:
-                return "purple";
-            case IMGCOLOR_RED:
-                return "red";
-            case IMGCOLOR_TEAL:
-                return "teal";
-            case IMGCOLOR_WHITE:
-                return "white";
-            case IMGCOLOR_YELLOW:
-                return "yellow";
-            default:
-                return "black";
-        }
+        return colorFilter;
     }
 
     public void setColorFilter(String colorFilter) {
         this.colorFilter = colorFilter;
+    }
+
+    public String getColorFilterKey() {
+        // todo: This is gross.
+        if (colorFilter == null) {
+            return null;
+        }
+        if (! colorFilterKeys.containsValue(colorFilter)) {
+            return null;
+        }
+
+        return colorFilterKeys.get(colorFilter);
     }
 
     // ---------------------------------------------------------------

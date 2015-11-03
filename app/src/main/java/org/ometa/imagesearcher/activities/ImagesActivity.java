@@ -54,12 +54,11 @@ public class ImagesActivity extends AppCompatActivity {
         //fetchAllImages("cats");
 
         filterOptions = new SearchFilterOptions();
-        filterOptions.setImageSize(SearchFilterOptions.SIZE_XLARGE);
-        filterOptions.setImageType(SearchFilterOptions.TYPE_PHOTO);
+//        filterOptions.setImageSize(SearchFilterOptions.SIZE_XLARGE);
+//        filterOptions.setImageType(SearchFilterOptions.TYPE_PHOTO);
         filterOptions.setAsSiteSearch("foo");
         filterOptions.setImageColorization(SearchFilterOptions.IMGC_GRAY);
         filterOptions.setColorFilter(filterOptions.IMGCOLOR_BLUE);
-//        Toast.makeText(this, "size: " + filterOptions.getImageSize(), Toast.LENGTH_LONG).show();
         showSearchFilterDialog();
     }
 
@@ -71,7 +70,6 @@ public class ImagesActivity extends AppCompatActivity {
         SearchFilterDialog sfd = SearchFilterDialog.newInstance(filterOptions);
         sfd.show(fm, "fragment_search_filter");
     }
-
 
     // ---------------------------------------------------
 

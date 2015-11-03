@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.WindowManager;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -69,8 +70,6 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
         gvImages.setAdapter(adapter);
 
         client = new ImageSearchClient();
-        //fetchAllImages("cats");
-
         filterOptions = new SearchFilterOptions();
 
         // default options
@@ -186,6 +185,8 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
 
             @Override
             public boolean onQueryTextSubmit(String query) {
+                getWindow().setSoftInputMode(
+                        WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
                 adapter.clear();
                 currentQuery = query;
                 fetchAllImages(currentQuery);
@@ -208,7 +209,7 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.actionSearchFilter) {
+        if (id == R.id.mnuFilter) {
             showSearchFilterDialog();
             return true;
         }

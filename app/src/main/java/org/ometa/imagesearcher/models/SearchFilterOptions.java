@@ -7,7 +7,6 @@ import android.util.Log;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 
 /**
  * Created by devin on 11/1/15.
@@ -28,8 +27,6 @@ public class SearchFilterOptions implements Parcelable {
                 sb.append("&as_sitesearch=").append(URLEncoder.encode(asSiteSearch, "utf-8"));
             }
             if (imageSize != null) {
-                Log.d(TAG, imageSize);
-                Log.d(TAG, getImageSizeKey());
                 sb.append("&imgsz=").append(URLEncoder.encode(getImageSizeKey(), "utf-8"));
             }
             if (imageType != null) {
@@ -55,14 +52,15 @@ public class SearchFilterOptions implements Parcelable {
     public final static String SIZE_LARGE = "Large";
     public final static String SIZE_XLARGE = "X-Large";
     public final static String[] imageSizes = {SIZE_ICON, SIZE_MEDIUM, SIZE_LARGE, SIZE_XLARGE};
-
-    private final static LinkedHashMap<String, String> imageSizeKeys;
-    static {
-        imageSizeKeys = new LinkedHashMap<>();
-        imageSizeKeys.put(SIZE_ICON, "icon");
-        imageSizeKeys.put(SIZE_MEDIUM, "medium");
-        imageSizeKeys.put(SIZE_LARGE, "xxlarge");
-        imageSizeKeys.put(SIZE_XLARGE, "huge");
+    private final static HashMap<String, String> IMAGE_SIZE_KEYS = populateImageSizes();
+    
+    private static HashMap<String, String> populateImageSizes() {
+        HashMap<String, String> keys = new HashMap<>();
+        keys.put(SIZE_ICON, "icon");
+        keys.put(SIZE_MEDIUM, "medium");
+        keys.put(SIZE_LARGE, "xxlarge");
+        keys.put(SIZE_XLARGE, "huge");
+        return keys;
     }
 
     private String imageSize = null;
@@ -70,22 +68,23 @@ public class SearchFilterOptions implements Parcelable {
     public String getImageSize() {
         return imageSize;
     }
+    public void setImageSize(String imageSize) {
+        this.imageSize = imageSize;
+    }
+
+    // todo: This is gross.
 
     public String getImageSizeKey() {
-
-        // todo: This is gross.
         if (imageSize == null) {
             return null;
         }
-        if (! imageSizeKeys.containsValue(imageSize)) {
-           return null;
+        if (IMAGE_SIZE_KEYS.containsKey(imageSize)) {
+            String val = IMAGE_SIZE_KEYS.get(imageSize);
+            Log.d(TAG, val);
+
+            return IMAGE_SIZE_KEYS.get(imageSize);
         }
-
-        return imageSizeKeys.get(imageSize);
-    }
-
-    public void setImageSize(String imageSize) {
-        this.imageSize = imageSize;
+        return null;
     }
 
     // ---------------------------------------------------------------
@@ -130,16 +129,13 @@ public class SearchFilterOptions implements Parcelable {
     }
 
     public String getImageTypeKey() {
-
-        // todo: This is gross.
         if (imageType == null) {
             return null;
         }
-        if (! imageTypeKeys.containsValue(imageType)) {
-            return null;
+        if (imageTypeKeys.containsKey(imageType)) {
+            return imageTypeKeys.get(imageType);
         }
-
-        return imageTypeKeys.get(imageType);
+        return null;
     }
 
     // ---------------------------------------------------------------
@@ -167,16 +163,13 @@ public class SearchFilterOptions implements Parcelable {
     }
 
     public String getImageColorizationKey() {
-
-        // todo: This is gross.
         if (imageType == null) {
             return null;
         }
-        if (! imageColorizationKeys.containsValue(imageColorization)) {
-            return null;
+        if (imageColorizationKeys.containsKey(imageColorization)) {
+            return imageColorizationKeys.get(imageColorization);
         }
-
-        return imageColorizationKeys.get(imageColorization);
+        return null;
     }
 
     // ---------------------------------------------------------------
@@ -228,15 +221,13 @@ public class SearchFilterOptions implements Parcelable {
     }
 
     public String getColorFilterKey() {
-        // todo: This is gross.
         if (colorFilter == null) {
             return null;
         }
-        if (! colorFilterKeys.containsValue(colorFilter)) {
-            return null;
+        if (colorFilterKeys.containsKey(colorFilter)) {
+            return colorFilterKeys.get(colorFilter);
         }
-
-        return colorFilterKeys.get(colorFilter);
+        return null;
     }
 
     // ---------------------------------------------------------------

@@ -11,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.GridView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -30,8 +29,6 @@ import java.util.HashMap;
 
 import cz.msebera.android.httpclient.Header;
 
-
-
 public class ImagesActivity extends AppCompatActivity {
     private static final String TAG = ImagesActivity.class.getSimpleName();
 
@@ -39,6 +36,7 @@ public class ImagesActivity extends AppCompatActivity {
     private ImageAdapter adapter;
     private ImageSearchClient client;
     private MenuItem miSearchSpinner;
+    private SearchFilterOptions filterOptions;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,26 +53,21 @@ public class ImagesActivity extends AppCompatActivity {
         client = new ImageSearchClient();
         fetchAllImages("cats");
 
+        filterOptions = new SearchFilterOptions();
         showSearchFilterDialog();
     }
 
     // ---------------------------------------------------
-    // dialog stuff
+    // dialog
+
     private void showSearchFilterDialog() {
         FragmentManager fm = getSupportFragmentManager();
-        SearchFilterDialog sfd = SearchFilterDialog.newInstance(getString(R.string.search_filter));
+        SearchFilterDialog sfd = SearchFilterDialog.newInstance(filterOptions);
         sfd.show(fm, "fragment_search_filter");
     }
 
 
-    @Override
-    public void onFinishImageFilterDialog(SearchFilterOptions opts) {
-        Toast.makeText(this, "Hi, " + inputText, Toast.LENGTH_SHORT).show();
-    }
-
-
-
-
+    // ---------------------------------------------------
 
     private int totalPages;
     private int currentPageIndex;

@@ -3,7 +3,8 @@ package org.ometa.imagesearcher.models;
 /**
  * Created by devin on 11/1/15.
  * This feels so verbose. There must be an easier way.
- * See public final LinkedHashMap<String, String>
+ * See: public final LinkedHashMap<String, String>
+ *      http://stackoverflow.com/questions/4936819/java-check-if-enum-contains-a-given-string
  */
 public class SearchFilterOptions {
 
@@ -13,6 +14,27 @@ public class SearchFilterOptions {
         imageType = null;
         imgColoration = null;
         colorFilter = null;
+    }
+
+    // todo: I am sure there are more efficient ways of doing this.
+    public String toQuery() {
+        StringBuilder sb = new StringBuilder();
+        if (asSiteSearch != null) {
+            sb.append("&as_sitesearch=").append(asSiteSearch);
+        }
+        if (imageSize != null) {
+            sb.append("&imgsz=").append(getImageSize());
+        }
+        if (imageType != null) {
+            sb.append("&imgtype=").append(getImageType());
+        }
+        if (imgColoration != null) {
+            sb.append("&imgc=").append(getImgColoration());
+        }
+        if (colorFilter != null) {
+            sb.append("&imgcolor=").append(getColorFilter());
+        }
+        return sb.toString();
     }
 
     // ---------------------------------------------------------------
@@ -39,6 +61,12 @@ public class SearchFilterOptions {
     private String imageSize;
 
     public String getImageSize() {
+
+        // todo: This is gross.
+        if(imageSize == null) {
+            return null;
+        }
+
         switch (imageSize) {
             case SIZE_ICON:
                 return "icon";
@@ -96,6 +124,12 @@ public class SearchFilterOptions {
     private String imageType;
 
     public String getImageType() {
+
+        // todo: This is gross.
+        if(imageType == null) {
+            return null;
+        }
+
         switch (imageType) {
             case TYPE_FACE:
                 return "face";
@@ -137,6 +171,12 @@ public class SearchFilterOptions {
     private String imgColoration;
 
     public String getImgColoration() {
+
+        // todo: This is gross.
+        if(imgColoration == null) {
+            return null;
+        }
+
         switch (imgColoration) {
             case IMGC_COLOR:
                 return "color";
@@ -187,6 +227,12 @@ public class SearchFilterOptions {
     private String colorFilter;
 
     public String getColorFilter() {
+
+        // todo: This is gross.
+        if(colorFilter == null) {
+            return null;
+        }
+
         switch (colorFilter) {
             case IMGCOLOR_BLACK:
                 return "black";
@@ -221,26 +267,5 @@ public class SearchFilterOptions {
         if (ColorFilter.contains(colorFilter)) {
             this.colorFilter = colorFilter;
         }
-    }
-
-    // todo: I am sure there are more efficient ways of doing this.
-    public String buildQuery() {
-        StringBuilder sb = new StringBuilder();
-        if (asSiteSearch != null) {
-            sb.append("&as_sitesearch=").append(asSiteSearch);
-        }
-        if (imageSize != null) {
-            sb.append("&imgsz=").append(getImageSize());
-        }
-        if (imageType != null) {
-            sb.append("&imgtype=").append(getImageType());
-        }
-        if (imgColoration != null) {
-            sb.append("&imgc=").append(getImgColoration());
-        }
-        if (colorFilter != null) {
-            sb.append("&imgcolor=").append(getColorFilter());
-        }
-        return sb.toString();
     }
 }

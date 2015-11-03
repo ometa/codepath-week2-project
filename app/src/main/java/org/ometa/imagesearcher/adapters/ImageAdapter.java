@@ -1,6 +1,7 @@
 package org.ometa.imagesearcher.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -8,6 +9,8 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import org.ometa.imagesearcher.R;
+import org.ometa.imagesearcher.activities.ImageDetailActivity;
 import org.ometa.imagesearcher.models.Image;
 
 import java.util.ArrayList;
@@ -46,7 +49,7 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     // create a new ImageView for each item referenced by the Adapter
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         ImageView view = (ImageView) convertView;
         if (convertView == null) {
             view = new ImageView(context);
@@ -55,9 +58,17 @@ public class ImageAdapter extends BaseAdapter {
         String url = getItem(position).getTbUrl();
         Picasso.with(context)
                 .load(url)
-                // .placeholder(R.drawable.ic_nocover)
+                .placeholder(R.drawable.blurry_background)
                 .into(view);
         view.setAdjustViewBounds(true);
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, ImageDetailActivity.class);
+                intent.putExtra("image", getItem(position));
+                context.startActivity(intent);
+            }
+        });
         return view;
     }
 }

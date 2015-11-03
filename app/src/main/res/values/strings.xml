@@ -12,4 +12,5 @@
     <string name="example_domain">example.com</string>
     <string name="filter">Filter</string>
     <string name="reset">Reset</string>
+    <string name="title_activity_image_detail">ImageDetailActivity</string>
 </resources>

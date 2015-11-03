@@ -1,5 +1,8 @@
 package org.ometa.imagesearcher.models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,7 +28,7 @@ import java.util.ArrayList;
  * "contentNoFormatting": "json - rails best way to",
  * "tbUrl": "http://t1.gstatic.com/images?q=tbn:ANd9GcQQigy-U6KTXke82n5hma5qvFM2UyVnkGtJme6pkZgl_1GYM--Yb90oqnOJ"
  */
-public class Image {
+public class Image implements Parcelable {
 
     private int width;
     private int height;
@@ -140,4 +143,57 @@ public class Image {
     public String getTbUrl() {
         return tbUrl;
     }
+
+
+    // parcelable
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(this.width);
+        dest.writeInt(this.height);
+        dest.writeString(this.imageId);
+        dest.writeInt(this.tbWidth);
+        dest.writeInt(this.tbHeight);
+        dest.writeString(this.unescapedUrl);
+        dest.writeString(this.url);
+        dest.writeString(this.visibleUrl);
+        dest.writeString(this.title);
+        dest.writeString(this.titleNoFormatting);
+        dest.writeString(this.originalContextUrl);
+        dest.writeString(this.content);
+        dest.writeString(this.contentNoFormatting);
+        dest.writeString(this.tbUrl);
+    }
+
+    protected Image(Parcel in) {
+        this.width = in.readInt();
+        this.height = in.readInt();
+        this.imageId = in.readString();
+        this.tbWidth = in.readInt();
+        this.tbHeight = in.readInt();
+        this.unescapedUrl = in.readString();
+        this.url = in.readString();
+        this.visibleUrl = in.readString();
+        this.title = in.readString();
+        this.titleNoFormatting = in.readString();
+        this.originalContextUrl = in.readString();
+        this.content = in.readString();
+        this.contentNoFormatting = in.readString();
+        this.tbUrl = in.readString();
+    }
+
+    public static final Parcelable.Creator<Image> CREATOR = new Parcelable.Creator<Image>() {
+        public Image createFromParcel(Parcel source) {
+            return new Image(source);
+        }
+
+        public Image[] newArray(int size) {
+            return new Image[size];
+        }
+    };
 }

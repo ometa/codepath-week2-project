@@ -52,4 +52,11 @@
         android:imeOptions="actionDone"
         android:hint="@string/limit_to_site" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/filter"
+        android:id="@+id/btnFilter"
+        android:layout_gravity="center_horizontal" />
+
 </LinearLayout>

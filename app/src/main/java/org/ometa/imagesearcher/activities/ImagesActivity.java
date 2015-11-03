@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.GridView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -29,7 +30,7 @@ import java.util.HashMap;
 
 import cz.msebera.android.httpclient.Header;
 
-public class ImagesActivity extends AppCompatActivity {
+public class ImagesActivity extends AppCompatActivity implements SearchFilterDialog.OnFilterButtonPressedListener {
     private static final String TAG = ImagesActivity.class.getSimpleName();
 
     private GridView gvImages;
@@ -55,11 +56,11 @@ public class ImagesActivity extends AppCompatActivity {
 
         filterOptions = new SearchFilterOptions();
 //        filterOptions.setImageSize(SearchFilterOptions.SIZE_XLARGE);
-//        filterOptions.setImageType(SearchFilterOptions.TYPE_PHOTO);
+        filterOptions.setImageType(SearchFilterOptions.TYPE_PHOTO);
 //        filterOptions.setAsSiteSearch("foo");
         filterOptions.setImageColorization(SearchFilterOptions.IMGC_GRAY);
         filterOptions.setColorFilter(filterOptions.IMGCOLOR_BLUE);
-        showSearchFilterDialog();
+        //showSearchFilterDialog();
     }
 
     // ---------------------------------------------------
@@ -174,8 +175,7 @@ public class ImagesActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_images, menu);
 
-//        miSearchSpinner = menu.findItem(R.id.miSearchSpinner);
-
+        // init search
         MenuItem searchItem = menu.findItem(R.id.actionSearch);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -203,9 +203,18 @@ public class ImagesActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.actionSettings) {
+        if (id == R.id.actionSearchFilter) {
+            showSearchFilterDialog();
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onFilterButtonPressed(SearchFilterOptions opts) {
+        Toast.makeText(this, opts.getImageType() + ";" + opts.getImageSize()
+                + ";" + opts.getImageColorization() + ";" + opts.getColorFilter()
+                + ";" + opts.getAsSiteSearch()
+                , Toast.LENGTH_LONG).show();
     }
 }

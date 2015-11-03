@@ -23,6 +23,8 @@ import java.util.Arrays;
  */
 public class SearchFilterDialog extends DialogFragment {
 
+    public SearchFilterDialog() {}
+
     // fragment listener
     private OnFilterButtonPressedListener listener;
 
@@ -41,7 +43,7 @@ public class SearchFilterDialog extends DialogFragment {
         }
     }
 
-    // viewholder pattern
+    // view holder pattern
     private static class ViewHolder {
         private Spinner spinnerImageSize;
         private Spinner spinnerImageType;
@@ -51,8 +53,6 @@ public class SearchFilterDialog extends DialogFragment {
         private Button btnFilter;
     }
     private ViewHolder viewHolder;
-
-    public SearchFilterDialog() {}
 
     public static SearchFilterDialog newInstance(SearchFilterOptions opts) {
         Bundle args = new Bundle();
@@ -72,7 +72,13 @@ public class SearchFilterDialog extends DialogFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // setup the view holder
+        // set dialog title
+        getDialog().setTitle(getString(R.string.search_filter));
+
+        // get options from the activity
+        SearchFilterOptions opts = getArguments().getParcelable("opts");
+
+        // setup view holder
         viewHolder.spinnerImageSize = (Spinner) view.findViewById(R.id.spinnerImageSize);
         viewHolder.spinnerImageType = (Spinner) view.findViewById(R.id.spinnerImageType);
         viewHolder.spinnerImageColorization = (Spinner) view.findViewById(R.id.spinnerImageColorization);
@@ -80,24 +86,17 @@ public class SearchFilterDialog extends DialogFragment {
         viewHolder.etAsSiteSearch = (EditText) view.findViewById(R.id.etAsSiteSearch);
         viewHolder.btnFilter = (Button) view.findViewById(R.id.btnFilter);
 
-        // get options from the activity
-        SearchFilterOptions opts = getArguments().getParcelable("opts");
-
-        // set dialog title
-        getDialog().setTitle(getString(R.string.search_filter));
-
         // initialize our spinners
-        initSpinners(opts);
+        initSpinner(viewHolder.spinnerImageSize, SearchFilterOptions.imageSizes, opts.getImageSize());
+        initSpinner(viewHolder.spinnerImageType, SearchFilterOptions.imageTypes, opts.getImageType());
+        initSpinner(viewHolder.spinnerImageColorization, SearchFilterOptions.imageColorizations, opts.getImageColorization());
+        initSpinner(viewHolder.spinnerColorFilter, SearchFilterOptions.colorFilters, opts.getColorFilter());
 
-        // init sitesearch field
+        // initialize as_sitesearch field
         if (opts.getAsSiteSearch() != null) {
             viewHolder.etAsSiteSearch.setText(opts.getAsSiteSearch());
         }
-
-        // Show soft keyboard automatically and request focus to field
         viewHolder.etAsSiteSearch.requestFocus();
-//        getDialog().getWindow().setSoftInputMode(
-//                WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
 
         // hook in the filter button callback
         viewHolder.btnFilter.setOnClickListener(new View.OnClickListener() {
@@ -110,6 +109,8 @@ public class SearchFilterDialog extends DialogFragment {
         });
     }
 
+    // This checks for differences between the options object and the various views,
+    // and updates and returns the options object with any new values.
     private SearchFilterOptions getUpdatedOptions() {
         SearchFilterOptions opts = getArguments().getParcelable("opts");
 
@@ -154,94 +155,25 @@ public class SearchFilterDialog extends DialogFragment {
         return opts;
     }
 
-    private void initSpinners(SearchFilterOptions opts) {
-        // image size spinner
-        ArrayAdapter<String> aaImageSize = new ArrayAdapter<>(getContext(),
+    private void initSpinner(final Spinner spinner, String[] optionsArray, String value) {
+        ArrayAdapter<String> aa = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_spinner_item,
-                SearchFilterOptions.imageSizes);
-        aaImageSize.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        viewHolder.spinnerImageSize.setAdapter(aaImageSize);
+                optionsArray);
+        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(aa);
 
-        viewHolder.spinnerImageSize.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                viewHolder.spinnerImageSize.setSelection(position);
+                spinner.setSelection(position);
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        // image type spinner
-        ArrayAdapter<String> aaImageType = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_spinner_item,
-                SearchFilterOptions.imageTypes);
-        aaImageType.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        viewHolder.spinnerImageType.setAdapter(aaImageType);
-
-        viewHolder.spinnerImageType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                viewHolder.spinnerImageType.setSelection(position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-        // image colorization spinner
-        ArrayAdapter<String> aaImageColorization = new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_spinner_item,
-                SearchFilterOptions.imageColorizations);
-        aaImageColorization.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        viewHolder.spinnerImageColorization.setAdapter(aaImageColorization);
-
-        viewHolder.spinnerImageColorization.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                viewHolder.spinnerImageColorization.setSelection(position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-        // color filter spinner
-        ArrayAdapter<String> aaColorFilter= new ArrayAdapter<>(getContext(),
-                android.R.layout.simple_spinner_item,
-                SearchFilterOptions.colorFilters);
-        aaImageColorization.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        viewHolder.spinnerColorFilter.setAdapter(aaColorFilter);
-
-        viewHolder.spinnerColorFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                viewHolder.spinnerColorFilter.setSelection(position);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-            }
-        });
-
-        // set default values
-        if (opts.getImageSize() != null) {
-            int pos = Arrays.asList(SearchFilterOptions.imageSizes).indexOf(opts.getImageSize());
-            viewHolder.spinnerImageSize.setSelection(pos);
-        }
-        if (opts.getImageType() != null) {
-            int pos = Arrays.asList(SearchFilterOptions.imageTypes).indexOf(opts.getImageType());
-            viewHolder.spinnerImageType.setSelection(pos);
-        }
-        if (opts.getImageColorization() != null) {
-            int pos = Arrays.asList(SearchFilterOptions.imageColorizations).indexOf(opts.getImageColorization());
-            viewHolder.spinnerImageColorization.setSelection(pos);
-        }
-
-        if (opts.getColorFilter() != null) {
-            int pos = Arrays.asList(SearchFilterOptions.colorFilters).indexOf(opts.getColorFilter());
-            viewHolder.spinnerColorFilter.setSelection(pos);
+        if (value != null) {
+            int pos = Arrays.asList(optionsArray).indexOf(value);
+            spinner.setSelection(pos);
         }
     }
 }

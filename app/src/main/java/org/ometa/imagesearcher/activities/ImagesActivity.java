@@ -178,7 +178,7 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_images, menu);
 
-        // init search
+        // search
         MenuItem searchItem = menu.findItem(R.id.actionSearch);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {

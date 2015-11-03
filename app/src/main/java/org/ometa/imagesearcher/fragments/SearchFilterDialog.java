@@ -6,6 +6,7 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
@@ -44,8 +45,7 @@ public class SearchFilterDialog extends DialogFragment {
         viewHolder = new ViewHolder();
         return inflater.inflate(R.layout.fragment_search_filter, container);
     }
-
-
+    
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -63,34 +63,50 @@ public class SearchFilterDialog extends DialogFragment {
         // set dialog title
         getDialog().setTitle(getString(R.string.search_filter));
 
-        // initialize image size spinner
+        // initialize our spinners
+        initSpinners(opts);
+
+        // init sitesearch field
+        if (opts.getAsSiteSearch() != null) {
+            viewHolder.etAsSiteSearch.setText(opts.getAsSiteSearch());
+        }
+
+        // Show soft keyboard automatically and request focus to field
+        viewHolder.etAsSiteSearch.requestFocus();
+        getDialog().getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+    }
+
+    private void initSpinners(SearchFilterOptions opts) {
+        // image size spinner
         ArrayAdapter<String> aaImageSize = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_spinner_item,
                 SearchFilterOptions.imageSizes);
         aaImageSize.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         viewHolder.spinnerImageSize.setAdapter(aaImageSize);
 
-        // initialize image type spinner
+        // image type spinner
         ArrayAdapter<String> aaImageType = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_spinner_item,
                 SearchFilterOptions.imageTypes);
         aaImageType.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         viewHolder.spinnerImageType.setAdapter(aaImageType);
 
-        // initialize image colorization spinner
+        // image colorization spinner
         ArrayAdapter<String> aaImageColorization = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_spinner_item,
                 SearchFilterOptions.imageColorizations);
         aaImageColorization.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         viewHolder.spinnerImageColorization.setAdapter(aaImageColorization);
 
-        // initialize color filter spinner
+        // color filter spinner
         ArrayAdapter<String> aaColorFilter= new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_spinner_item,
                 SearchFilterOptions.colorFilters);
         aaImageColorization.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         viewHolder.spinnerColorFilter.setAdapter(aaColorFilter);
 
+        // set default values
         if (opts.getImageSize() != null) {
             int pos = Arrays.asList(SearchFilterOptions.imageSizes).indexOf(opts.getImageSize());
             viewHolder.spinnerImageSize.setSelection(pos);
@@ -98,9 +114,6 @@ public class SearchFilterDialog extends DialogFragment {
         if (opts.getImageType() != null) {
             int pos = Arrays.asList(SearchFilterOptions.imageTypes).indexOf(opts.getImageType());
             viewHolder.spinnerImageType.setSelection(pos);
-        }
-        if (opts.getAsSiteSearch() != null) {
-            viewHolder.etAsSiteSearch.setText(opts.getAsSiteSearch());
         }
         if (opts.getImageColorization() != null) {
             int pos = Arrays.asList(SearchFilterOptions.imageColorizations).indexOf(opts.getImageColorization());
@@ -111,20 +124,5 @@ public class SearchFilterDialog extends DialogFragment {
             int pos = Arrays.asList(SearchFilterOptions.colorFilters).indexOf(opts.getColorFilter());
             viewHolder.spinnerColorFilter.setSelection(pos);
         }
-
-        // Show soft keyboard automatically and request focus to field
-        viewHolder.spinnerImageSize.requestFocus();
-//        viewHolder.etImageSize.requestFocus();
-
-//        getDialog().getWindow().setSoftInputMode(
-//                WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-    }
-
-
-    private boolean argHas(String str) {
-        if (getArguments().containsKey(str)) {
-            return true;
-        }
-        return false;
     }
 }

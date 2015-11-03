@@ -56,7 +56,7 @@ public class ImagesActivity extends AppCompatActivity {
         filterOptions = new SearchFilterOptions();
 //        filterOptions.setImageSize(SearchFilterOptions.SIZE_XLARGE);
 //        filterOptions.setImageType(SearchFilterOptions.TYPE_PHOTO);
-        filterOptions.setAsSiteSearch("foo");
+//        filterOptions.setAsSiteSearch("foo");
         filterOptions.setImageColorization(SearchFilterOptions.IMGC_GRAY);
         filterOptions.setColorFilter(filterOptions.IMGCOLOR_BLUE);
         showSearchFilterDialog();

@@ -9,4 +9,5 @@
     <string name="as_sitesearch">Limit to Site</string>
     <string name="colorize">Colorize?</string>
     <string name="color_filter">Color Filter</string>
+    <string name="limit_to_site">Limit to website</string>
 </resources>

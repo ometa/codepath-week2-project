@@ -2,6 +2,7 @@ package org.ometa.imagesearcher.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -20,19 +21,23 @@ public class SearchOptions implements Parcelable {
     public String toQuery() {
         StringBuilder sb = new StringBuilder();
         try {
-            if (asSiteSearch != null) {
+            if (asSiteSearch != null && ! asSiteSearch.isEmpty()) {
                 sb.append("&as_sitesearch=").append(URLEncoder.encode(asSiteSearch, "utf-8"));
             }
-            if (imageSize != null) {
+            if (imageSize != null && !imageSize.isEmpty()) {
+                Log.d(TAG, imageSize);
                 sb.append("&imgsz=").append(URLEncoder.encode(getImageSizeKey(), "utf-8"));
             }
-            if (imageType != null) {
+            if (imageType != null && !imageColorization.isEmpty()) {
+                Log.d(TAG, imageType);
                 sb.append("&imgtype=").append(URLEncoder.encode(getImageTypeKey(), "utf-8"));
             }
-            if (imageColorization != null) {
+            if (imageColorization != null && !imageColorization.isEmpty()) {
+                Log.d(TAG, imageColorization);
                 sb.append("&imgc=").append(URLEncoder.encode(getImageColorizationKey(), "utf-8"));
             }
-            if (colorFilter != null) {
+            if (colorFilter != null && !colorFilter.isEmpty()) {
+                Log.d(TAG, colorFilter);
                 sb.append("&imgcolor=").append(URLEncoder.encode(getColorFilterKey(), "utf-8"));
             }
         } catch (UnsupportedEncodingException e) {
@@ -48,7 +53,8 @@ public class SearchOptions implements Parcelable {
     public final static String SIZE_MEDIUM = "Medium";
     public final static String SIZE_LARGE = "Large";
     public final static String SIZE_XLARGE = "X-Large";
-    public final static String[] imageSizes = {SIZE_ICON, SIZE_MEDIUM, SIZE_LARGE, SIZE_XLARGE};
+    public final static String SIZE_HINT = "";
+    public final static String[] imageSizes = {SIZE_ICON, SIZE_MEDIUM, SIZE_LARGE, SIZE_XLARGE, SIZE_HINT};
     private final static HashMap<String, String> IMAGE_SIZE_KEYS = populateImageSizes();
     
     private static HashMap<String, String> populateImageSizes() {
@@ -99,7 +105,8 @@ public class SearchOptions implements Parcelable {
     public static final String TYPE_PHOTO = "Photo";
     public static final String TYPE_CLIPART = "Clip Art";
     public static final String TYPE_LINEART = "Line Drawings";
-    public static final String[] imageTypes = {TYPE_FACE, TYPE_PHOTO, TYPE_CLIPART, TYPE_LINEART};
+    public static final String TYPE_HINT = "";
+    public static final String[] imageTypes = {TYPE_FACE, TYPE_PHOTO, TYPE_CLIPART, TYPE_LINEART, TYPE_HINT};
     
     private static final HashMap<String, String> imageTypeKeys;
     static {
@@ -135,7 +142,8 @@ public class SearchOptions implements Parcelable {
 
     public static final String IMGC_GRAY = "Grayscale";
     public static final String IMGC_COLOR = "Color";
-    public static String[] imageColorizations = {IMGC_GRAY, IMGC_COLOR};
+    public final static String IMGC_HINT = "";
+    public static String[] imageColorizations = {IMGC_GRAY, IMGC_COLOR, IMGC_HINT};
             
     private static final HashMap<String, String> imageColorizationKeys;
     static {
@@ -179,10 +187,11 @@ public class SearchOptions implements Parcelable {
     public static final String IMGCOLOR_TEAL = "Teal";
     public static final String IMGCOLOR_WHITE = "White";
     public static final String IMGCOLOR_YELLOW = "Yellow";
+    public static final String IMGCOLOR_HINT = "";
     public static final String[] colorFilters = {
         IMGCOLOR_BLACK, IMGCOLOR_BLUE, IMGCOLOR_BROWN, IMGCOLOR_GRAY, IMGCOLOR_GREEN,
         IMGCOLOR_ORANGE, IMGCOLOR_PINK, IMGCOLOR_PURPLE, IMGCOLOR_RED, IMGCOLOR_TEAL,
-        IMGCOLOR_WHITE, IMGCOLOR_YELLOW
+        IMGCOLOR_WHITE, IMGCOLOR_YELLOW, IMGCOLOR_HINT
     };
 
     private static final HashMap<String, String> colorFilterKeys;

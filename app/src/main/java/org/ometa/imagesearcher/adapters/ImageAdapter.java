@@ -20,7 +20,6 @@ public class ImageAdapter extends BaseAdapter {
     private ArrayList<Image> images;
 
     public ImageAdapter(Context context, ArrayList<Image> images) {
-//        super(activity, images);
         this.context = context;
         this.images = images;
     }
@@ -28,7 +27,6 @@ public class ImageAdapter extends BaseAdapter {
     public void clear() {
         images = new ArrayList<>();
     }
-
 
     public void add(Image image) {
         images.add(image);
@@ -46,7 +44,6 @@ public class ImageAdapter extends BaseAdapter {
     public long getItemId(int position) {
         return 0;
     }
-
 
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {

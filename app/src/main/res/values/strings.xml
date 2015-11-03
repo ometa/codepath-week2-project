@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Find Images Fast!</string>
+    <string name="app_name">ImageScour</string>
     <string name="search">Search</string>
     <string name="search_filter">Filter your search</string>
     <string name="loading">Loading...</string>
@@ -9,6 +9,7 @@
     <string name="as_sitesearch">Limit to Site</string>
     <string name="colorize">Colorize?</string>
     <string name="color_filter">Color Filter</string>
-    <string name="limit_to_site">Limit to website</string>
+    <string name="example_domain">example.com</string>
     <string name="filter">Filter</string>
+    <string name="reset">Reset</string>
 </resources>

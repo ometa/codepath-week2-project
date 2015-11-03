@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import org.ometa.imagesearcher.R;
 import org.ometa.imagesearcher.models.SearchOptions;
@@ -21,9 +22,9 @@ import java.util.Arrays;
 /**
  * Created by devin on 11/1/15.
  */
-public class SearchFilterDialog extends DialogFragment {
+public class FilterDialog extends DialogFragment {
 
-    public SearchFilterDialog() {}
+    public FilterDialog() {}
 
     // fragment listener
     private OnFilterButtonPressedListener listener;
@@ -51,13 +52,14 @@ public class SearchFilterDialog extends DialogFragment {
         private Spinner spinnerColorFilter;
         private EditText etAsSiteSearch;
         private Button btnFilter;
+        private Button btnReset;
     }
     private ViewHolder viewHolder;
 
-    public static SearchFilterDialog newInstance(SearchOptions opts) {
+    public static FilterDialog newInstance(SearchOptions opts) {
         Bundle args = new Bundle();
         args.putParcelable("opts", opts);
-        SearchFilterDialog frag = new SearchFilterDialog();
+        FilterDialog frag = new FilterDialog();
         frag.setArguments(args);
         return frag;
     }
@@ -85,6 +87,7 @@ public class SearchFilterDialog extends DialogFragment {
         viewHolder.spinnerColorFilter = (Spinner) view.findViewById(R.id.spinnerColorFilter);
         viewHolder.etAsSiteSearch = (EditText) view.findViewById(R.id.etAsSiteSearch);
         viewHolder.btnFilter = (Button) view.findViewById(R.id.btnFilter);
+        viewHolder.btnReset = (Button) view.findViewById(R.id.btnReset);
 
         // initialize our spinners
         initSpinner(viewHolder.spinnerImageSize, SearchOptions.imageSizes, opts.getImageSize());
@@ -92,18 +95,27 @@ public class SearchFilterDialog extends DialogFragment {
         initSpinner(viewHolder.spinnerImageColorization, SearchOptions.imageColorizations, opts.getImageColorization());
         initSpinner(viewHolder.spinnerColorFilter, SearchOptions.colorFilters, opts.getColorFilter());
 
-        // initialize as_sitesearch field
+        // initialize the as_sitesearch field
         if (opts.getAsSiteSearch() != null) {
             viewHolder.etAsSiteSearch.setText(opts.getAsSiteSearch());
         }
         viewHolder.etAsSiteSearch.requestFocus();
 
-        // hook in the filter button callback
+        // hook in the filter button
         viewHolder.btnFilter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 SearchOptions opts = getUpdatedOptions();
                 listener.onFilterButtonPressed(opts);
+                dismiss();
+            }
+        });
+
+        // hook in the reset button
+        viewHolder.btnReset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.onFilterButtonPressed(new SearchOptions());
                 dismiss();
             }
         });
@@ -155,25 +167,50 @@ public class SearchFilterDialog extends DialogFragment {
         return opts;
     }
 
-    private void initSpinner(final Spinner spinner, String[] optionsArray, String value) {
-        ArrayAdapter<String> aa = new ArrayAdapter<>(getContext(),
+    private void initSpinner(final Spinner spinner, String[] optionsArray, String startingValue) {
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
                 android.R.layout.simple_spinner_item,
-                optionsArray);
-        aa.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(aa);
+                optionsArray) {
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View v = super.getView(position, convertView, parent);
+                if (position == getCount()) {
+                    ((TextView)v.findViewById(android.R.id.text1)).setText("");
+                    // add the hint text to the very end
+                    ((TextView)v.findViewById(android.R.id.text1)).setHint(getItem(getCount()));
+                }
+                return v;
+            }
+
+            @Override
+            public int getCount() {
+                return super.getCount() - 1; // do not display last item. It is used as hint.
+            }
+        };
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        if (startingValue == null) {
+            // set the hint the default selection so it appears on launch
+            spinner.setSelection(adapter.getCount());
+        } else {
+            // set the spinner to the correct entry
+            int pos = Arrays.asList(optionsArray).indexOf(startingValue);
+            spinner.setSelection(pos);
+        }
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 spinner.setSelection(position);
             }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
 
-        if (value != null) {
-            int pos = Arrays.asList(optionsArray).indexOf(value);
-            spinner.setSelection(pos);
-        }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
     }
 }

@@ -20,7 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.ometa.imagesearcher.R;
 import org.ometa.imagesearcher.adapters.ImageAdapter;
-import org.ometa.imagesearcher.fragments.SearchFilterDialog;
+import org.ometa.imagesearcher.fragments.FilterDialog;
 import org.ometa.imagesearcher.listeners.EndlessScrollListener;
 import org.ometa.imagesearcher.models.Image;
 import org.ometa.imagesearcher.models.SearchOptions;
@@ -47,7 +47,7 @@ import cz.msebera.android.httpclient.Header;
 // User can scroll down “infinitely” to continue loading more image results (up to 8 pages)
 
 
-public class ImagesActivity extends AppCompatActivity implements SearchFilterDialog.OnFilterButtonPressedListener {
+public class ImagesActivity extends AppCompatActivity implements FilterDialog.OnFilterButtonPressedListener {
     private static final String TAG = ImagesActivity.class.getSimpleName();
 
     private MenuItem miSearchSpinner;
@@ -149,7 +149,7 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
 
     private void showSearchFilterDialog() {
         FragmentManager fm = getSupportFragmentManager();
-        SearchFilterDialog sfd = SearchFilterDialog.newInstance(filterOptions);
+        FilterDialog sfd = FilterDialog.newInstance(filterOptions);
         sfd.show(fm, "fragment_search_filter");
     }
 
@@ -230,17 +230,4 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
             basicApiLoad();
         }
     }
-
-    ///
-
-
-    public void setDefaultOptions() {
-        filterOptions.setImageSize(SearchOptions.SIZE_XLARGE);
-        filterOptions.setImageType(SearchOptions.TYPE_PHOTO);
-        filterOptions.setAsSiteSearch("foo");
-        filterOptions.setImageColorization(SearchOptions.IMGC_GRAY);
-        filterOptions.setColorFilter(SearchOptions.IMGCOLOR_BLUE);
-    }
-
-
 }

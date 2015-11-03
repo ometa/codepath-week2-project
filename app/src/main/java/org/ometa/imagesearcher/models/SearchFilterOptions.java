@@ -2,7 +2,10 @@ package org.ometa.imagesearcher.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -13,32 +16,33 @@ import java.util.LinkedHashMap;
  *      http://stackoverflow.com/questions/4936819/java-check-if-enum-contains-a-given-string
  */
 public class SearchFilterOptions implements Parcelable {
+    private static final String TAG = SearchFilterOptions.class.getSimpleName();
 
-    public SearchFilterOptions() {
-        imageSize = null;
-        asSiteSearch = null;
-        imageType = null;
-        imageColorization = null;
-        colorFilter = null;
-    }
+    public SearchFilterOptions() {}
 
     // todo: I am sure there are more efficient ways of doing this.
     public String toQuery() {
         StringBuilder sb = new StringBuilder();
-        if (asSiteSearch != null) {
-            sb.append("&as_sitesearch=").append(asSiteSearch);
-        }
-        if (imageSize != null) {
-            sb.append("&imgsz=").append(getImageSizeKey());
-        }
-        if (imageType != null) {
-            sb.append("&imgtype=").append(getImageTypeKey());
-        }
-        if (imageColorization != null) {
-            sb.append("&imgc=").append(getImageColorizationKey());
-        }
-        if (colorFilter != null) {
-            sb.append("&imgcolor=").append(getColorFilterKey());
+        try {
+            if (asSiteSearch != null) {
+                sb.append("&as_sitesearch=").append(URLEncoder.encode(asSiteSearch, "utf-8"));
+            }
+            if (imageSize != null) {
+                Log.d(TAG, imageSize);
+                Log.d(TAG, getImageSizeKey());
+                sb.append("&imgsz=").append(URLEncoder.encode(getImageSizeKey(), "utf-8"));
+            }
+            if (imageType != null) {
+                sb.append("&imgtype=").append(URLEncoder.encode(getImageTypeKey(), "utf-8"));
+            }
+            if (imageColorization != null) {
+                sb.append("&imgc=").append(URLEncoder.encode(getImageColorizationKey(), "utf-8"));
+            }
+            if (colorFilter != null) {
+                sb.append("&imgcolor=").append(URLEncoder.encode(getColorFilterKey(), "utf-8"));
+            }
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
         }
         return sb.toString();
     }
@@ -61,7 +65,7 @@ public class SearchFilterOptions implements Parcelable {
         imageSizeKeys.put(SIZE_XLARGE, "huge");
     }
 
-    private String imageSize;
+    private String imageSize = null;
 
     public String getImageSize() {
         return imageSize;
@@ -87,7 +91,7 @@ public class SearchFilterOptions implements Parcelable {
     // ---------------------------------------------------------------
     // as_sitesearch
 
-    private String asSiteSearch; // "photobucket.com"
+    private String asSiteSearch = null; // "photobucket.com"
 
     public String getAsSiteSearch() {
         return asSiteSearch;
@@ -115,7 +119,7 @@ public class SearchFilterOptions implements Parcelable {
         imageTypeKeys.put(TYPE_LINEART, "lineart");
     }
 
-    private String imageType;
+    private String imageType = null;
 
     public String getImageType() {
         return imageType;
@@ -152,7 +156,7 @@ public class SearchFilterOptions implements Parcelable {
         imageColorizationKeys.put(IMGC_COLOR, "color");
     }
 
-    private String imageColorization;
+    private String imageColorization = null;
 
     public String getImageColorization() {
         return imageColorization;
@@ -213,7 +217,7 @@ public class SearchFilterOptions implements Parcelable {
         colorFilterKeys.put(IMGCOLOR_YELLOW, "yellow");
     }
 
-    private String colorFilter;
+    private String colorFilter = null;
 
     public String getColorFilter() {
         return colorFilter;

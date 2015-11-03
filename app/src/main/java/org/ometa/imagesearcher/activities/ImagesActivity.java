@@ -26,9 +26,25 @@ import org.ometa.imagesearcher.models.SearchFilterOptions;
 import org.ometa.imagesearcher.network.ImageSearchClient;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import cz.msebera.android.httpclient.Header;
+
+
+// display search form in action bar
+// accept user input, display spinner, search google api
+// display returned api data
+
+// User can enter a search query that will display a grid of image results from the Google Image API.
+// User can click on "settings" which allows selection of advanced search options to filter results
+// User can configure advanced search filters such as:
+// Size (small, medium, large, extra-large)
+// Color filter (black, blue, brown, gray, green, etc...)
+// Type (faces, photo, clip art, line art)
+// Site (espn.com)
+// Subsequent searches will have any filters applied to the search results
+// User can tap on any image in results to see the image full-screen
+// User can scroll down “infinitely” to continue loading more image results (up to 8 pages)
+
 
 public class ImagesActivity extends AppCompatActivity implements SearchFilterDialog.OnFilterButtonPressedListener {
     private static final String TAG = ImagesActivity.class.getSimpleName();
@@ -38,6 +54,7 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
     private ImageSearchClient client;
     private MenuItem miSearchSpinner;
     private SearchFilterOptions filterOptions;
+    private String currentQuery;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,13 +71,16 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
         client = new ImageSearchClient();
         //fetchAllImages("cats");
 
-        // default options
         filterOptions = new SearchFilterOptions();
-//        filterOptions.setImageSize(SearchFilterOptions.SIZE_XLARGE);
+
+        // default options
+        /*
+        filterOptions.setImageSize(SearchFilterOptions.SIZE_XLARGE);
         filterOptions.setImageType(SearchFilterOptions.TYPE_PHOTO);
-//        filterOptions.setAsSiteSearch("foo");
+        filterOptions.setAsSiteSearch("foo");
         filterOptions.setImageColorization(SearchFilterOptions.IMGC_GRAY);
         filterOptions.setColorFilter(filterOptions.IMGCOLOR_BLUE);
+        */
     }
 
     // ---------------------------------------------------
@@ -79,15 +99,18 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
 
     private void fetchAllImages(String query) {
 //        showProgressBar();
-        HashMap<String, String> opts = new HashMap<>();  // todo: customize this with a dialogue
         totalPages = 0;
         currentPageIndex = -1;
-        fetchImages(query, opts);
+        fetchImages(query, filterOptions);
 //        hideProgressBar();
     }
 
-    private void fetchImages(final String query, final HashMap<String, String> opts) {
-        client.getImages(query, opts, new JsonHttpResponseHandler() {
+    private void fetchImages(final String query, final SearchFilterOptions opts) {
+        fetchImages(query, opts, 0);
+    }
+
+    private void fetchImages(final String query, final SearchFilterOptions opts, int start) {
+        client.getImages(query, opts, start, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 Log.d(TAG, response.toString());
@@ -108,12 +131,9 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
                         totalPages = cursor.has("pages") ? cursor.getJSONArray("pages").length() : 0;
 
                         if (morePagesToGo()) {
-                            HashMap<String, String> newOpts = new HashMap<>(opts);
                             int start = (currentPageIndex * 8) + 8;
-                            newOpts.put("start", String.valueOf(start));
-
                             // todo: here is the recursion. try to polish this.
-                            fetchImages(query, newOpts);
+                            fetchImages(query, opts, start);
                         }
                     }
                 } catch (JSONException e) {
@@ -137,22 +157,6 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
         }
         return false;
     }
-
-        // display search form in action bar
-        // accept user input, display spinner, search google api
-        // display returned api data
-
-        // User can enter a search query that will display a grid of image results from the Google Image API.
-        // User can click on "settings" which allows selection of advanced search options to filter results
-        // User can configure advanced search filters such as:
-        // Size (small, medium, large, extra-large)
-        // Color filter (black, blue, brown, gray, green, etc...)
-        // Type (faces, photo, clip art, line art)
-        // Site (espn.com)
-        // Subsequent searches will have any filters applied to the search results
-        // User can tap on any image in results to see the image full-screen
-        // User can scroll down “infinitely” to continue loading more image results (up to 8 pages)
-
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -183,7 +187,8 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
             @Override
             public boolean onQueryTextSubmit(String query) {
                 adapter.clear();
-                fetchAllImages(query);
+                currentQuery = query;
+                fetchAllImages(currentQuery);
                 return true;
             }
 
@@ -212,9 +217,19 @@ public class ImagesActivity extends AppCompatActivity implements SearchFilterDia
 
     @Override
     public void onFilterButtonPressed(SearchFilterOptions opts) {
+
         Toast.makeText(this, opts.getImageType() + ";" + opts.getImageSize()
                 + ";" + opts.getImageColorization() + ";" + opts.getColorFilter()
                 + ";" + opts.getAsSiteSearch()
                 , Toast.LENGTH_LONG).show();
+
+        filterOptions = opts;
+
+        if (currentQuery != null) {
+            adapter.clear();
+            fetchImages(currentQuery, filterOptions);
+        }
+
+
     }
 }

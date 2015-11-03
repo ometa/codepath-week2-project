@@ -5,6 +5,8 @@ import android.util.Log;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
+import org.ometa.imagesearcher.models.SearchFilterOptions;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
@@ -30,8 +32,14 @@ public class ImageSearchClient {
         return API_BASE_URL + path;
     }
 
-    public void getImages(final String query, final Map<String, String> opts, JsonHttpResponseHandler handler) {
-        String fullQuery = getFullQuery(query, opts);
+    public void getImages(final String searchString, SearchFilterOptions opts, int start, JsonHttpResponseHandler handler) {
+        String fullQuery = null;
+        try {
+            fullQuery = BASE_QUERY + "&q=" + URLEncoder.encode(searchString, "utf-8")
+                    + opts.toQuery() + "&start=" + start;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         client.get(getApiUrl() + fullQuery, handler);
     }
 
